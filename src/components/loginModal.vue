@@ -28,26 +28,4 @@ const login = () => {
 }
 </script>
 
-<style scoped>
-.windowStyle {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 500px;
-  height: 300px;
-  box-sizing: border-box;
-  background-color: lightblue;
-  z-index: 100000;
-  padding: 10px;
-
-  .formStyle {
-    display: grid;
-    grid-template-columns: 20% 75%;
-    grid-template-rows: 20% 20% 20% 10%;
-    height: 100%;
-    gap:5%;
-    box-sizing: border-box;
-  }
-}
-</style>
+<style scoped lang="less" src="/src/styles/components/loginModal.less"></style>

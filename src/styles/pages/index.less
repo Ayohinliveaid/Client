@@ -1,0 +1,65 @@
+:global(body) {
+  margin: 0;
+  overflow: hidden;
+}
+// .layout {
+//   // display: flex;
+//   // height: 100vh;
+//   box-sizing: border-box;
+//   // padding: 10px;
+//   // overflow: hidden;
+//   overflow: hidden;
+
+.mapStyle {
+  // justify-content: center;
+  // position: relative;
+  // flex: 1;
+  width: 50%;
+
+  .setPitch {
+    position: absolute;
+    z-index: 10000;
+    left: 0;
+    bottom: 40px;
+
+    .buttonStyle {
+      width: 30px;
+      height: 30px;
+      margin: 5px;
+    }
+  }
+  .setRotation {
+    position: absolute;
+    z-index: 10000;
+    left: 0;
+    bottom: 0;
+
+    .buttonStyle {
+      width: 30px;
+      height: 30px;
+      margin: 5px;
+    }
+  }
+
+  .userStyle {
+    position: absolute;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    background-color: aqua;
+    height: 30px;
+    width: 30px;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+
+
+::-webkit-scrollbar {
+  display: none;
+}

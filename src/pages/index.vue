@@ -38,32 +38,7 @@
     <div class="userStyle" ref="user" v-on:click="toggleShowLoginModal">Login</div>
     <loginModal :showLoginModal="showLoginModal" />
 
-    <div class="dialogSectioinStyle" ref="dialogSectioin">
-      <div class="dialogSetStyle" @wheel="handleScroll" ref="dialogSet">
-        <div class="dialogStyle" v-for="i in 3">
-          <div class="outputTextStyle titleStyle" ref="titleRefs">这是提出的问题</div>
-          <div v-if="!hide">
-            <div class="outputTextStyle contentStyle">{{ outputText }}</div>
-            <div class="saveButtonStyle" v-if="outputText" @click="save">
-              保存这个回答
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <textarea
-        id="inputBox"
-        ref="inputBox"
-        v-model="inputText"
-        placeholder="给Estima发送消息"
-        placeholder-class="textarea-placeholder"
-        @input="adjustHeight"
-        class="inputStyle"
-        @keyup.enter.prevent="submit"
-        @keydown.enter.prevent
-        v-if="!hide"
-      />
-    </div>
+    <dialogBar v-bind:showDialogBar="showDialogBar" ref="dialogSectioin" />
   </div>
 
   <!-- </div> -->
@@ -80,90 +55,64 @@ import {
   HeatmapLayer,
 } from "@antv/l7";
 import { Mapbox, GaodeMap } from "@antv/l7-maps";
-import { nodeListProps } from "ant-design-vue/es/vc-tree/props";
+// import { nodeListProps } from "ant-design-vue/es/vc-tree/props";
 import loginModal from "/src/components/loginModal.vue";
+import dialogBar from "/src/components/dialogBar.vue";
 
-// 初始化文本和文本框高度
-const text = ref("");
-const inputBox = ref(null);
-
-// 动态调整textarea高度
-const adjustHeight = () => {
-  // // 重置高度，保证在清空输入内容后，高度自动恢复
-  inputBox.value.style.height = "auto";
-  // 根据内容设置高度
-  inputBox.value.style.height = `${inputBox.value.scrollHeight}px`;
-};
-
-//提交问题
-const inputText = ref("");
 //title引用的数组
 const titleRefs = ref([]);
 
-const outputText = ref(
-  "获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight"
-);
-
-const submit = () => {
-  titleRefs.value[titleRefs.value.length - 1].innerText = inputText.value;
-  inputText.value = "";
-  setTimeout(() => {
-    //浏览器计算高度有延迟，需要异步执行该函数
-    adjustHeight();
-  }, 50);
-  //滚动到最右侧的
-  const width = parseFloat(window.getComputedStyle(dialogSet.value).width);
-  dialogSet.value.scrollLeft += titleRefs.value.length * width;
-};
-
-//保存回答
+// 保存回答
 const save = () => {};
 
 // 隐藏对话框回答部分
-const hide = ref(false);
+const showDialogBar = ref(true);
 const dialogSectioin = ref(null);
 const handleClick = (event) => {
-  if (dialogSectioin.value.contains(event.target)) {
-    if (hide.value === false) return;
-    hide.value = false;
-    titleRefs.value.forEach((v, i) => {
-      v.style.borderRadius = "10px 10px 0 0";
-      v.style.opacity = "1";
-    });
-    dialogSet.value.style.marginBottom = "20px";
-    //设置向下舒展的动态效果
-    hide.value = false;
-    dialogSectioin.value.style.backgroundColor = "rgba(225,155,255,1)";
-    const id = setInterval(() => {
-      dialogSectioin.value.style.height =
-        parseFloat(window.getComputedStyle(dialogSectioin.value).height) + 10 + "px";
-      // console.log(dialogSectioin.value.style.height);
-    }, 1);
-    setTimeout(() => {
-      dialogSectioin.value.style.height = "calc(100vh - 20px)";
-      clearInterval(id);
-    }, 100);
+  showDialogBar.value = false;
+  if (dialogSectioin.value.$el?.contains(event.target)) {
+    if (showDialogBar.value === false) return;
+    showDialogBar.value = false;
+
+    // titleRefs.value.forEach((v, i) => {
+    //   v.style.borderRadius = "10px 10px 0 0";
+    //   v.style.opacity = "1";
+    // });
+    // dialogSet.value.style.marginBottom = "20px";
+    // //设置向下舒展的动态效果
+    // showDialogBar.value = false;
+    // dialogSectioin.value.style.backgroundColor = "rgba(225,155,255,1)";
+    // const id = setInterval(() => {
+    //   dialogSectioin.value.style.height =
+    //     parseFloat(window.getComputedStyle(dialogSectioin.value).height) + 10 + "px";
+    //   // console.log(dialogSectioin.value.style.height);
+    // }, 1);
+    // setTimeout(() => {
+    //   dialogSectioin.value.style.height = "calc(100vh - 20px)";
+    //   clearInterval(id);
+    // }, 100);
   } else if (!user.value.contains(event.target)) {
     showLoginModal.value = false;
-    if (hide.value === true) return;
-    titleRefs.value.forEach((v, i) => {
-      v.style.borderRadius = "10px";
-      v.style.opacity = "0.3";
-    });
-    dialogSet.value.style.marginBottom = "0";
+    if (showDialogBar.value === true) return;
 
-    //设置向上收缩的动态效果
-    const id = setInterval(() => {
-      dialogSectioin.value.style.height =
-        parseFloat(window.getComputedStyle(dialogSectioin.value).height) - 18 + "px";
-      // console.log(dialogSectioin.value.style.height);
-    }, 1);
-    setTimeout(() => {
-      dialogSectioin.value.style.height = "auto";
-      clearInterval(id);
-      dialogSectioin.value.style.backgroundColor = "rgba(255,255,255,0)";
-      hide.value = true;
-    }, 100);
+    // titleRefs.value.forEach((v, i) => {
+    //   v.style.borderRadius = "10px";
+    //   v.style.opacity = "0.3";
+    // });
+    // dialogSet.value.style.marginBottom = "0";
+
+    // //设置向上收缩的动态效果
+    // const id = setInterval(() => {
+    //   dialogSectioin.value.style.height =
+    //     parseFloat(window.getComputedStyle(dialogSectioin.value).height) - 18 + "px";
+    //   // console.log(dialogSectioin.value.style.height);
+    // }, 1);
+    // setTimeout(() => {
+    //   dialogSectioin.value.style.height = "auto";
+    //   clearInterval(id);
+    //   dialogSectioin.value.style.backgroundColor = "rgba(255,255,255,0)";
+    //   showDialogBar.value = true;
+    // }, 100);
   }
 };
 
@@ -240,8 +189,8 @@ onMounted(() => {
     }),
   });
 
-  // fetch("https://gw.alipayobjects.com/os/rmsportal/oVTMqfzuuRFKiDwhPSFL.json")
-  fetch("http://127.0.0.1:8000/property/getData")
+  fetch("https://gw.alipayobjects.com/os/rmsportal/oVTMqfzuuRFKiDwhPSFL.json")
+    // fetch("http://127.0.0.1:8000/property/getData")
     .then((res) => res.json())
     .then((data) => {
       const pointLayer = new PointLayer({})
@@ -329,149 +278,4 @@ const toggleShowLoginModal = () => {
 };
 </script>
 
-<style scoped lang="scss">
-:global(body) {
-  margin: 0;
-  overflow: hidden;
-}
-// .layout {
-//   // display: flex;
-//   // height: 100vh;
-//   box-sizing: border-box;
-//   // padding: 10px;
-//   // overflow: hidden;
-//   overflow: hidden;
-
-.mapStyle {
-  // justify-content: center;
-  // position: relative;
-  // flex: 1;
-  width: 50%;
-
-  .setPitch {
-    position: absolute;
-    z-index: 10000;
-    left: 0;
-    bottom: 40px;
-
-    .buttonStyle {
-      width: 30px;
-      height: 30px;
-      margin: 5px;
-    }
-  }
-  .setRotation {
-    position: absolute;
-    z-index: 10000;
-    left: 0;
-    bottom: 0;
-
-    .buttonStyle {
-      width: 30px;
-      height: 30px;
-      margin: 5px;
-    }
-  }
-
-  .userStyle {
-    position: absolute;
-    z-index: 10000;
-    left: 0;
-    top: 0;
-    background-color: aqua;
-    height: 30px;
-    width: 30px;
-    padding: 10px;
-    border-radius: 10px;
-    margin: 5px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-}
-
-.dialogSectioinStyle {
-  background-color: rgba(225, 155, 255, 1);
-  border-radius: 10px;
-  height: calc(100vh - 20px);
-  width: 30%;
-  box-sizing: border-box;
-  position: absolute;
-  padding-top: 0;
-  line-height: 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 10px;
-  position: fixed;
-  right: 0;
-  z-index: 10000;
-
-  .dialogSetStyle {
-    width: 100%;
-    display: flex;
-    overflow: auto;
-    margin-bottom: 70px;
-    scroll-behavior: smooth;
-
-    .dialogStyle {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      flex-shrink: 0;
-      align-items: center;
-
-      .titleStyle {
-        background-color: rgb(250, 142, 130);
-        width: 100%;
-        padding: 10px;
-        box-sizing: border-box;
-        border-radius: 10px 10px 0 0;
-      }
-      .contentStyle {
-        background-color: rgb(240, 223, 220);
-        width: 100%;
-        pointer-events: none;
-        padding: 10px;
-        box-sizing: border-box;
-        border-radius: 0 0 10px 10px;
-      }
-      .saveButtonStyle {
-        background-color: cyan;
-        border-radius: 10px;
-        padding: 5px 10px;
-        margin: 10px auto;
-        width: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-      }
-      .saveButtonStyle:hover {
-        cursor: pointer;
-      }
-    }
-  }
-
-  .inputStyle {
-    position: absolute;
-    background-color: greenyellow;
-    bottom: 0;
-    left: 0;
-    margin: 10px;
-    padding: 10px;
-    border-radius: 10px;
-    width: calc(100% - 20px);
-    box-sizing: border-box;
-    max-height: 300px;
-    min-height: 60px;
-    max-width: calc(100% - 20px);
-    min-width: 90%;
-  }
-}
-
-::-webkit-scrollbar {
-  display: none;
-}
-
-// }
-</style>
+<style scoped lang="less" src="/src/styles/pages/index.less"></style>

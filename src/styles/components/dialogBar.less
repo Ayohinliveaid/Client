@@ -1,0 +1,78 @@
+.dialogBarStyle {
+  background-color: rgba(225, 155, 255, 1);
+  border-radius: 10px;
+  // height: calc(100vh - 20px);
+  width: 30%;
+  box-sizing: border-box;
+  position: absolute;
+  padding-top: 0;
+  line-height: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px;
+  position: fixed;
+  right: 0;
+  z-index: 10000;
+
+  .dialogSetStyle {
+    width: 100%;
+    display: flex;
+    overflow: auto;
+    // margin-bottom: 70px;
+    scroll-behavior: smooth;
+
+    .dialogStyle {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      flex-shrink: 0;
+      align-items: center;
+
+      .titleStyle {
+        background-color: rgb(250, 142, 130);
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        border-radius: 10px 10px 0 0;
+      }
+      .contentStyle {
+        background-color: rgb(240, 223, 220);
+        width: 100%;
+        pointer-events: none;
+        padding: 10px;
+        box-sizing: border-box;
+        border-radius: 0 0 10px 10px;
+      }
+      .saveButtonStyle {
+        background-color: cyan;
+        border-radius: 10px;
+        padding: 5px 10px;
+        margin: 10px auto;
+        width: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .saveButtonStyle:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+  .inputStyle {
+    position: absolute;
+    background-color: greenyellow;
+    bottom: 0;
+    left: 0;
+    margin: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    width: calc(100% - 20px);
+    box-sizing: border-box;
+    max-height: 300px;
+    min-height: 60px;
+    max-width: calc(100% - 20px);
+    min-width: 90%;
+  }
+}
