@@ -1,27 +1,47 @@
 <template>
   <div class="dialogBarStyle" ref="dialogBar">
-    <div class="dialogSetStyle" @wheel="handleScroll" ref="dialogSet">
+    <!-- <div class="dialogSetStyle" @wheel="handleScroll" ref="dialogSet">
       <div class="dialogStyle" v-for="i in 3">
-        <div class="outputTextStyle titleStyle" ref="title">这是提出的问题</div>
-        <div v-if="showDialogBar">
-          <div class="outputTextStyle contentStyle">{{ outputText }}</div>
-          <div class="saveButtonStyle" v-if="outputText" @click="save">保存这个回答</div>
-        </div>
+        <div class="outputTextStyle titleStyle" ref="title"></div>
       </div>
-    </div>
+    </div> -->
 
-    <textarea
-      id="inputBox"
-      ref="inputBox"
-      v-model="inputText"
-      placeholder="给Estima发送消息"
-      placeholder-class="textarea-placeholder"
-      @input="adjustHeight"
-      class="inputStyle"
-      @keyup.enter.prevent="submit"
-      @keydown.enter.prevent
-      v-if="showDialogBar"
-    />
+    <a-collapse v-model:activeKey="activeKey">
+      <a-collapse-panel key="3">
+        <template #header>
+          <!-- 使用header插槽插入下拉组件 -->
+          <a-dropdown :open="dropdownVisible" @openChange="handleOpenChange">
+            <span class="ant-dropdown-link">
+              {{ title }}
+              <DownOutlined />
+            </span>
+            <template #overlay>
+              <a-menu @click="handleMenuClick">
+                <a-menu-item v-for="(v, i) in menuItems" :key="v.key">{{
+                  v.label
+                }}</a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+        </template>
+        <div class="contentStyle">{{ outputText }}</div>
+        <div>
+          <div class="saveButtonStyle" v-if="outputText" @click="save">保存这个回答</div>
+
+          <textarea
+            id="inputBox"
+            ref="inputBox"
+            v-model="inputText"
+            placeholder="给Estima发送消息"
+            placeholder-class="textarea-placeholder"
+            @input="adjustHeight"
+            class="inputStyle"
+            @keyup.enter.prevent="submit"
+            @keydown.enter.prevent
+          />
+        </div>
+      </a-collapse-panel>
+    </a-collapse>
   </div>
 </template>
 
@@ -29,15 +49,43 @@
 import { onMounted, ref, reactive, toRefs } from "vue";
 const state = reactive({
   outputText:
-    "获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight",
-  title: [],
+    "获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight获取对输入框的引用，把他的高度设置为滚动高度即可",
+  title: "haha",
   inputBox: null,
   dialogSet: null,
   inputText: "",
+  activeKey: ["3"],
+  dropDownHeader: "hahah",
 });
 const props = defineProps({ showDialogBar: Boolean });
 //结构赋值每一个基本类型变量
-const { outputText, inputBox, title, dialogSet, inputText } = toRefs(state);
+const {
+  outputText,
+  inputBox,
+  title,
+  dialogSet,
+  inputText,
+  activeKey,
+  dropDownHeader,
+} = toRefs(state);
+
+const menuItems = ref([
+  { key: "1", label: "标题一" },
+  { key: "2", label: "标题二" },
+  { key: "3", label: "标题三" },
+]);
+
+const items = [
+  { question: "问题1", answer: "回答1" },
+  { question: "问题2", answer: "回答2" },
+  { question: "问题3", answer: "回答3" },
+];
+
+//菜单点击事件，改变标题
+const handleMenuClick = ({ key }) => {
+  const theMenuItem = menuItems.value.find((v) => v.key === key); // 确保返回布尔值
+  title.value = theMenuItem.label;
+};
 
 //提交方法
 const submit = () => {
