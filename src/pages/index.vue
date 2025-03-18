@@ -1,45 +1,11 @@
 <template>
   <div class="backgroundStyle">
-    <mapL7></mapL7>
-    <dialogBar v-bind:showDialogBar="showDialogBar" ref="dialogSectioin"></dialogBar>
+    <!-- <chartG2></chartG2> -->
+    <mapL7 ref="theMapL7"></mapL7>
+    <dialogBar v-model:activeKey="activeKey" ref="dialogSectioin"></dialogBar>
     <div class="userStyle" ref="user" v-on:click="toggleShowLoginModal">Login</div>
     <loginModal v-model:showLoginModal="showLoginModal" />
   </div>
-
-  <!-- <chartG2>
-      <div class="setPitch">
-        <button
-          class="buttonStyle"
-          @mousedown="modifyAttribute('pitch', '+1')"
-          @mouseup="stopModifing"
-        >
-          +
-        </button>
-        <button
-          class="buttonStyle"
-          @mousedown="modifyAttribute('pitch', '-1')"
-          @mouseup="stopModifing"
-        >
-          -
-        </button>
-      </div>
-      <div class="setRotation">
-        <button
-          class="buttonStyle"
-          @mousedown="modifyAttribute('rotation', '+1')"
-          @mouseup="stopModifing"
-        >
-          +
-        </button>
-        <button
-          class="buttonStyle"
-          @mousedown="modifyAttribute('rotation', '-1')"
-          @mouseup="stopModifing"
-        >
-          -
-        </button>
-      </div>
-    </chartG2> -->
 </template>
 
 <script setup>
@@ -52,14 +18,15 @@ import mapL7 from "/src/components/mapL7.vue";
 
 const state = reactive({
   title: "hah",
+  theMapL7: null,
+  activeKey: [],
 });
-const { title } = toRefs(state);
+const { title, theMapL7, activeKey } = toRefs(state);
 
 //控制菜单点击后不收起
 const dropdownVisible = ref(false);
 
 // 隐藏对话框回答部分
-const showDialogBar = ref(true);
 const dialogSectioin = ref(null);
 
 const dialogSet = ref(null);
@@ -89,34 +56,26 @@ const handleScroll = (event) => {
   }, 1000);
 };
 
-// 编辑倾斜角度和旋转角度
-let scene = null;
+//点击事件
+// 监听整个页面的点击事件
+const handleClick = (event) => {
+  if (theMapL7.value && theMapL7.value.$el.contains(event.target)) {
+    console.log("点击了 mapL7 组件");
+    activeKey.value = [];
+  } else {
+    console.log("点击了其他地方");
+  }
+};
 
-const modificationTimmer = ref(null);
-//编辑场景对象参数，长按有效
-const modifyAttribute = (attribute, change) => {
-  modificationTimmer.value = setInterval(() => {
-    if (attribute === "pitch") {
-      pitch.value += Number(change); // 修改 pitch
-      if (pitch.value < 0) {
-        pitch.value = 0;
-      } else if (pitch.value > 60) {
-        pitch.value = 60;
-      }
-      if (scene) {
-        scene.setPitch(pitch.value); // 确保使用最新的 pitch 值
-      }
-    } else if (attribute === "rotation") {
-      rotation.value += Number(change); // 修改 rotation
-      if (scene) {
-        scene.setRotation(rotation.value); // 确保使用最新的 rotation 值
-      }
-    }
-  }, 50);
-};
-const stopModifing = () => {
-  clearInterval(modificationTimmer.value);
-};
+onMounted(() => {
+  // 在 mounted 时，给 document 添加点击事件监听器
+  document.addEventListener("click", handleClick);
+});
+
+// onBeforeUnmount(() => {
+//   // 在组件卸载时，移除事件监听器
+//   document.removeEventListener("click", handleClick);
+// });
 
 const layout = ref("layout");
 const dialog = ref("dialog");
@@ -134,7 +93,6 @@ onMounted(() => {
 
 //登录注册模块
 const user = ref(null);
-const showLoginModal = ref(false);
 const toggleShowLoginModal = () => {
   showLoginModal.value = !showLoginModal.value;
   console.log(showLoginModal.value);

@@ -1,6 +1,38 @@
 <template>
   <div id="map" class="mapStyle">
-  haha
+    <div class="setPitch">
+      <a-button
+        class="buttonStyle"
+        @mousedown="modifyAttribute('pitch', '+1')"
+        @mouseup="stopModifing"
+      >
+        +
+      </a-button>
+      <a-button
+        class="buttonStyle"
+        @mousedown="modifyAttribute('pitch', '-1')"
+        @mouseup="stopModifing"
+      >
+        -
+      </a-button>
+    </div>
+    <div class="setRotation">
+      <a-button
+        class="buttonStyle"
+        @mousedown="modifyAttribute('rotation', '+1')"
+        @mouseup="stopModifing"
+      >
+        +
+      </a-button>
+      <a-button
+        class="buttonStyle"
+        @mousedown="modifyAttribute('rotation', '-1')"
+        @mouseup="stopModifing"
+      >
+        -
+      </a-button>
+    </div>
+    haha
     <slot></slot>
   </div>
 </template>
@@ -22,12 +54,14 @@ const state = reactive({
   data: [],
   pitch: 30,
   rotation: 0,
+  scene: null,
+  modificationTimmer: null,
 });
-const { data, pitch, rotation } = toRefs(state);
+const { data, pitch, rotation, scene, modificationTimmer } = toRefs(state);
 
 // 点图层气泡图;
 onMounted(() => {
-  const scene = new Scene({
+  scene.value = new Scene({
     id: "map",
     map: new GaodeMap({
       pitch: pitch.value,
@@ -38,7 +72,7 @@ onMounted(() => {
     }),
   });
 
-  scene.on("loaded", () => {
+  scene.value.on("loaded", () => {
     axios
       // .get("https://gw.alipayobjects.com/os/rmsportal/oVTMqfzuuRFKiDwhPSFL.json")
       .post("http://127.0.0.1:8000/property/getData")
@@ -75,11 +109,11 @@ onMounted(() => {
             zIndex: 0,
           })
           .active(true);
-        scene.addLayer(pointLayer);
+        scene.value.addLayer(pointLayer);
       });
   });
 
-  scene.on("loaded", () => {
+  scene.value.on("loaded", () => {
     axios
       .get(
         "https://gw.alipayobjects.com/os/basement_prod/d3564b06-670f-46ea-8edb-842f7010a7c6.json"
@@ -106,10 +140,35 @@ onMounted(() => {
             },
             zIndex: 0,
           });
-        scene.addLayer(layer);
+        scene.value.addLayer(layer);
       });
   });
 });
+
+//改变倾斜度和旋转度，长按有效
+const modifyAttribute = (attribute, change) => {
+  modificationTimmer.value = setInterval(() => {
+    if (attribute === "pitch") {
+      pitch.value += Number(change); // 修改 pitch
+      if (pitch.value < 0) {
+        pitch.value = 0;
+      } else if (pitch.value > 60) {
+        pitch.value = 60;
+      }
+      if (scene.value) {
+        scene.value.setPitch(pitch.value); // 确保使用最新的 pitch 值
+      }
+    } else if (attribute === "rotation") {
+      rotation.value += Number(change); // 修改 rotation
+      if (scene.value) {
+        scene.value.setRotation(rotation.value); // 确保使用最新的 rotation 值
+      }
+    }
+  }, 50);
+};
+const stopModifing = () => {
+  clearInterval(modificationTimmer.value);
+};
 </script>
 
 <style scoped lang="less" src="/src/styles/components/mapL7.less"></style>

@@ -6,7 +6,7 @@
       </div>
     </div> -->
 
-    <a-collapse v-model:activeKey="activeKey">
+    <a-collapse v-model:activeKey="activeKeyComputed">
       <a-collapse-panel key="3">
         <template #header>
           <!-- 使用header插槽插入下拉组件 -->
@@ -24,14 +24,14 @@
             </template>
           </a-dropdown>
         </template>
-        <div class="contentStyle">{{ outputText }}</div>
+        <div class="contentStyle">{{ answer }}</div>
         <div>
-          <div class="saveButtonStyle" v-if="outputText" @click="save">保存这个回答</div>
+          <div class="saveButtonStyle" v-if="answer" @click="saveChat">保存这个回答</div>
 
           <textarea
             id="inputBox"
             ref="inputBox"
-            v-model="inputText"
+            v-model="question"
             placeholder="给Estima发送消息"
             placeholder-class="textarea-placeholder"
             @input="adjustHeight"
@@ -46,25 +46,26 @@
 </template>
 
 <script setup>
-import { onMounted, ref, reactive, toRefs } from "vue";
+import { onMounted, ref, reactive, toRefs, computed } from "vue";
+import axios from 'axios'
 const state = reactive({
-  outputText:
+  answer:
     "获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight获取对输入框的引用，把他的高度设置为滚动高度即可",
   title: "haha",
   inputBox: null,
   dialogSet: null,
-  inputText: "",
-  activeKey: ["3"],
+  question: "",
   dropDownHeader: "hahah",
 });
-const props = defineProps({ showDialogBar: Boolean });
+const props = defineProps({ activeKey: Array });
+const emit = defineEmits(["update:activeKey"]); // 声明事件用于 v-model 绑定
 //结构赋值每一个基本类型变量
 const {
-  outputText,
+  answer,
   inputBox,
   title,
   dialogSet,
-  inputText,
+  question,
   activeKey,
   dropDownHeader,
 } = toRefs(state);
@@ -81,6 +82,12 @@ const items = [
   { question: "问题3", answer: "回答3" },
 ];
 
+//控制展开，计算属性用于双向绑定
+const activeKeyComputed = computed({
+  get: () => props.activeKey,
+  set: (value) => emit("update:activeKey", value),
+});
+
 //菜单点击事件，改变标题
 const handleMenuClick = ({ key }) => {
   const theMenuItem = menuItems.value.find((v) => v.key === key); // 确保返回布尔值
@@ -89,11 +96,11 @@ const handleMenuClick = ({ key }) => {
 
 //提交方法
 const submit = () => {
-  title.value[title.value.length - 1].innerText = inputText.value;
-  alert(inputText.value);
+  title.value[title.value.length - 1].innerText = question.value;
+  alert(question.value);
   // title.value[title.value.length - 1].innerText = "hahah";
 
-  props.inputText = "";
+  props.question = "";
   setTimeout(() => {
     //浏览器计算高度有延迟，需要异步执行该函数
     adjustHeight();
@@ -110,6 +117,23 @@ const adjustHeight = () => {
   // 根据内容设置高度
   inputBox.value.style.height = `${inputBox.value.scrollHeight}px`;
 };
+
+//保存当前对话
+const saveChat= ()=>{
+  const chat={
+    question:"hhh",
+    answer:"ooo",
+    data:"{thekey:thevalue}"
+  }
+  axios.post('http://127.0.0.1:8000/chat/savePermanently',{chat:chat}).then((response)=>{
+    const data= response.data;
+    if(data.message){alert(data.message)}else{
+      alert(data.err)
+    }
+  })
+
+
+}
 </script>
 
 <style scoped lang="less" src="/src/styles/components/dialogBar.less"></style>
