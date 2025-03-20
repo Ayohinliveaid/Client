@@ -1,4 +1,4 @@
-.dialogBarStyle {
+.chatBarStyle {
   background-color: rgba(225, 155, 255, 1);
   border-radius: 10px;
   width: 30%;
@@ -11,7 +11,31 @@
   top: 0;
   z-index: 1000;
 
-  .dialogSetStyle {
+
+
+  .questionText {
+    display: block; 
+   // white-space: normal; /* 允许换行 */
+    word-break: break-word; /* 长单词换行 */
+    overflow-x: auto; /* 超出部分隐藏 */
+    overflow-y:hidden;
+    display: -webkit-box;
+    // -webkit-line-clamp: 1; /* 限制最多显示三行 */
+    -webkit-box-orient: vertical;
+    max-height: 4.5em; /* 3 行高度 */ 
+  }
+//   .questionText {
+//     display: block; 
+//     white-space: nowrap;  /* 强制不换行 */
+//     overflow-x: auto;  /* 允许水平滚动 */
+//     overflow-y: hidden;  /* 禁止垂直滚动 */
+//     text-overflow: clip; /* 防止省略号（可选，可改为 ellipsis） */
+//     max-width: 100%; /* 限制最大宽度，防止撑破容器 */
+// }
+
+  
+
+  .chatSetStyle {
     width: 100%;
     display: flex;
     overflow: auto;
@@ -19,7 +43,7 @@
     scroll-behavior: smooth;
   }
 
-  .dialogStyle {
+  .chatStyle {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -73,9 +97,31 @@
   }
 }
 
+.menuText{
+  display: block;
+  width:200px;
+
+  // max-width: 10px;  /* 限制宽度 */
+height: 36px;  /* 固定高度，可根据需要调整 */
+overflow-x: auto;  /* 允许水平滚动 */
+overflow-y: hidden;  /* 禁止垂直滚动 */
+white-space: nowrap;  /* 让文本保持在一行，不自动换行 */
+}
+
 ::v-deep .ant-collapse .ant-collapse-content > .ant-collapse-content-box {
   height: 90vh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
+
+// ::v-deep .ant-collapse>.ant-collapse-item-active {
+//   height:50vh;
+//   display:flex;
+//   flex-direction:column;
+// }
+
+// ::v-deep .ant-collapse .ant-collapse-item:last-child >.ant-collapse-content {
+//   height:82vh;
+
+// }
