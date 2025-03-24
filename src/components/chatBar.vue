@@ -27,6 +27,13 @@
           </a-dropdown>
         </template>
         <div class="contentStyle">{{ theChat.answer }}</div>
+        <div
+          class="saveButtonStyle"
+          style="background-color: azure"
+          @click="bestFittingModelPredict"
+        >
+          <span>预测数据</span>
+        </div>
         <div>
           <div v-if="theChat.saved === 0" class="saveButtonStyle" @click="saveChat">
             <span>保存这个回答</span>
@@ -75,12 +82,14 @@ const state = reactive({
     question: "新问题",
     answer:
       "获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置，使的textarea根据内容调整height和scrollheight获取对输入框的引用，把他的高度设置为滚动高度即可",
+    data: [],
   },
   newChat: {
     id: "new",
     question: "新问题",
     answer: "正在思考",
     saved: 0,
+    data: [],
   },
 });
 const props = defineProps({ activeKey: Array });
@@ -133,43 +142,34 @@ const submit = async () => {
     state.theChat.answer = "得到的答案得到的答案得到的答案得到的答案得到的答案得到的答案";
 
     // const response = await axios.post("http://127.0.0.1:8000/property/getData");
-    state.theChat.data = [
-      { j: -95.692878, t: 1795, w: 29.048486 },
-      { j: -95.621654, t: 2050, w: 29.159313 },
-      { j: -95.832777, t: 1750, w: 29.385545 },
-      { j: -95.822279, t: 1600, w: 29.529074 },
-      { j: -95.638787, t: 1800, w: 29.150857 },
-      { j: -95.68719, t: 1000, w: 29.047557 },
-      { j: -95.9466908, t: 1875, w: 29.46569 },
-      { j: -95.731908, t: 2100, w: 29.532459 },
-      { j: -95.882095, t: 2500, w: 29.428891 },
-      { j: -95.836821, t: 1550, w: 29.393597 },
-      { j: -95.675125, t: 1400, w: 29.357355 },
-      { j: -95.642059, t: 1350, w: 29.126698 },
-      { j: -95.803286, t: 1765, w: 29.510028 },
-      { j: -95.818829, t: 1850, w: 29.524324 },
-      { j: -95.64636, t: 1500, w: 29.149027 },
-      { j: -95.748512, t: 1127, w: 29.538614 },
-      { j: -95.736517, t: 1550, w: 29.288497 },
-      { j: -95.729097, t: 2750, w: 29.525523 },
-      { j: -95.7055, t: 999, w: 29.038051 },
-      { j: -95.780724, t: 1995, w: 29.517914 },
-      { j: -95.705915, t: 1299, w: 29.038099 },
-      { j: -95.646687, t: 1200, w: 29.136685 },
-      { j: -95.936158, t: 1450, w: 29.260828 },
-      { j: -95.849982, t: 1980, w: 29.514634 },
-      { j: -95.735963, t: 2025, w: 29.526858 },
-      { j: -95.725102, t: 2450, w: 29.527717 },
-      { j: -95.680156, t: 1575, w: 29.08076 },
-    ];
+    // state.theChat.data = [
+    //   { x: -5, y: 2 * Math.pow(-5, 3) - 3 * Math.pow(-5, 2) + -5 - 4 }, // x = -5, y = -280
+    //   { x: -4, y: 2 * Math.pow(-4, 3) - 3 * Math.pow(-4, 2) + -4 - 4 }, // x = -4, y = -88
+    //   { x: -3, y: 2 * Math.pow(-3, 3) - 3 * Math.pow(-3, 2) + -3 - 4 }, // x = -3, y = -40
+    //   { x: -2, y: 2 * Math.pow(-2, 3) - 3 * Math.pow(-2, 2) + -2 - 4 }, // x = -2, y = -24
+    //   { x: -1, y: 2 * Math.pow(-1, 3) - 3 * Math.pow(-1, 2) + -1 - 4 }, // x = -1, y = -6
+    //   { x: 0, y: 2 * Math.pow(0, 3) - 3 * Math.pow(0, 2) + 0 - 4 }, // x = 0, y = -4
+    //   { x: 1, y: 2 * Math.pow(1, 3) - 3 * Math.pow(1, 2) + 1 - 4 }, // x = 1, y = -4
+    //   { x: 2, y: 2 * Math.pow(2, 3) - 3 * Math.pow(2, 2) + 2 - 4 }, // x = 2, y = 2
+    //   { x: 3, y: 2 * Math.pow(3, 3) - 3 * Math.pow(3, 2) + 3 - 4 }, // x = 3, y = 38
+    //   // { x: 4, y: 2 * Math.pow(4, 3) - 3 * Math.pow(4, 2) + 4 - 4 }, // x = 4, y = 100
+    //   // { x: 5, y: 2 * Math.pow(5, 3) - 3 * Math.pow(5, 2) + 5 - 4 },
+    // ];
+    for (let i = -10; i <= 10; i++) {
+      state.theChat.data.push({
+        x: i,
+        y: -Math.pow(i, 3) - 3 * Math.pow(i, 2) + i - 4,
+      });
+    }
     // alert(JSON.stringify(state.theChat.data));
 
     //存储到chatHistory列表
     await axios.post("http://127.0.0.1:8000/chat/updateChatHistory", {
       chat: state.theChat,
     });
-    //请求chatHistory列表，更新前端为最新状态
+    //请求chatHistory列表，更新前端为最新状态，当前对话的id更新为数据库中id
     getChatHistroy();
+    state.theChat.id = state.chatHistory[9].id;
   } catch (err) {
     console.log(err.message);
   }
@@ -187,7 +187,13 @@ const adjustHeight = () => {
 
 //保存当前对话
 const saveChat = () => {
-  const chat = state.chatHistory.find((v) => (v.id = state.theChat.id));
+  const chat = state.chatHistory.find((v) => v.id === state.theChat.id);
+  console.log(
+    "保存对话输出的对话历史，",
+    state.chatHistory,
+    "当前theChat的id",
+    state.theChat.id
+  );
   axios
     .post("http://127.0.0.1:8000/chat/saveTheChat", { chat: chat })
     .then((response) => {
@@ -195,6 +201,31 @@ const saveChat = () => {
       if (data.message) {
         alert(data.message);
         state.theChat.saved = 1;
+      } else {
+        alert(data.err);
+      }
+    })
+    .catch((err) => {});
+};
+
+//将当前对话的数据根据线性预测进行更新
+const bestFittingModelPredict = () => {
+  axios
+    // .post("http://127.0.0.1:8000/prediction/bestFittingModelPredict", {
+    .post("http://127.0.0.1:8000/prediction/BPNetworkPredict", {
+      data: state.theChat.data,
+      // n: [12, 13, 14, 15, 16, 17, 18, 19, 20],
+      // n: [-1, -2, -3, -4, 0, 1, 2, 3, 4, 5],
+      n: [-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7],
+      // n: 10,
+      // degree: 3,
+    })
+    .then((response) => {
+      const data = response.data;
+      if (data) {
+        // state.theChat.data = data;
+        console.log("预测数据", JSON.stringify(data));
+        emit("changeTheChat", data);
       } else {
         alert(data.err);
       }
@@ -215,6 +246,8 @@ const getChatHistroy = () => {
         };
       });
       state.menuItems.push({ key: "new", label: "新的问题" });
+      state.theChat = JSON.parse(JSON.stringify(state.chatHistory[9]));
+      emit("changeTheChat", state.theChat.data);
     })
     .catch((err) => {});
 };

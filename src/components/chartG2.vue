@@ -19,10 +19,8 @@ import {
 import axios from "axios";
 import { Chart } from "@antv/g2";
 
-const state = reactive({
-  data: [],
-});
-const { data } = toRefs(state);
+const state = reactive({});
+const {} = toRefs(state);
 
 const props = defineProps({ data: Array });
 // const chartContainer = ref(null);
@@ -33,24 +31,28 @@ onMounted(() => {
     container: "container", // 确保容器已挂载
     autoFit: true,
   });
+  chart
+    .point()
+    .data([])
+    .encode("x", "x")
+    .encode("y", "y")
+    .encode("size", 8) // 设置点的大小为固定的 10
+    .scale("x", {
+      type: "linear", // 使用 band 比例尺，适合离散数据
+    })
+    .style("fill", "steelblue");
 
-  state.data = [
-    // { j: -95.725102, t: 2450, w: 29.527717 },
-    // { j: -95.680156, t: 1575, w: 29.08076 },
-    // { j: -95.721409, t: 2200, w: 29.53275 },
-    // { j: -95.778, t: 1300, w: 29.518963 },
-    // { j: -95.750554, t: 2175, w: 29.440447 },
-    // { j: -95.798386, t: 1295, w: 29.529758 },
-    // { j: -95.77392, t: 2455, w: 29.496613 },
-  ];
-  chart.interval().data(state.data).encode("x", "w").encode("y", "t");
   chart.render();
-  // alert("let chart render成功");
   watch(
     () => props.data,
     (newData, oldData) => {
-      if (!Array.isArray(newData)) return;
-      chart.changeData(newData);
+      if (!Array.isArray(newData)) {
+        chart.changeData([]);
+      } else {
+        // alert("图表组件收到新数据", JSON.stringify(newData));
+        console.log("图表组件newData:", newData);
+        chart.changeData(newData);
+      }
     }
   );
 });

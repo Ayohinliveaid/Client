@@ -1,13 +1,17 @@
 <template>
   <div class="backgroundStyle" ref="background">
     <chartG2 v-bind:data="data" ref="theChartG2"></chartG2>
-    <!-- <mapL7 ref="theMapL7" ></mapL7> -->
+    <!-- <mapL7 v-bind:data="data" ref="theMapL7"></mapL7> -->
     <chatBar
-      v-model:activeKey="activeKey"
+      v-model:activeKey="chatBarActiveKey"
       ref="theChatBar"
       @changeTheChat="handleChangeTheChat"
-      v-bind:data="data"
     ></chatBar>
+    <menuBar
+      v-model:activeKey="menuBarActiveKey"
+      ref="theChatBar"
+      @changeTheChat="handleChangeTheChat"
+    ></menuBar>
     <div class="userStyle" ref="user" v-on:click="toggleShowLoginModal">Login</div>
     <loginModal v-model:showLoginModal="showLoginModal" />
   </div>
@@ -18,6 +22,7 @@ import { onMounted, ref, reactive, toRefs, onUnmounted } from "vue";
 
 import loginModal from "/src/components/loginModal.vue";
 import chatBar from "/src/components/chatBar.vue";
+import menuBar from "/src/components/menuBar.vue";
 import chartG2 from "/src/components/chartG2.vue";
 import mapL7 from "/src/components/mapL7.vue";
 import axios from "axios";
@@ -26,11 +31,20 @@ const state = reactive({
   title: "hah",
   theMapL7: null,
   theChartG2: null,
-  activeKey: [],
+  chatBarActiveKey: [],
+  menuBarActiveKey: [],
   showLoginModal: false,
   data: [],
 });
-const { title, theMapL7, theChartG2, activeKey, showLoginModal, data } = toRefs(state);
+const {
+  title,
+  theMapL7,
+  theChartG2,
+  chatBarActiveKey,
+  menuBarActiveKey,
+  showLoginModal,
+  data,
+} = toRefs(state);
 
 //控制菜单点击后不收起
 const dropdownVisible = ref(false);
@@ -75,7 +89,8 @@ const handleClick = (event) => {
   ) {
     // if (background.value && background.value.contains(event.target)) {
     console.log("点击了 theMapL7");
-    activeKey.value = [];
+    chatBarActiveKey.value = [];
+    menuBarActiveKey.value = [];
   } else {
     console.log("点击了theMapL7以外地方");
   }
@@ -100,7 +115,7 @@ const toggleShowLoginModal = () => {
 //接受对话模块传输的数据
 const handleChangeTheChat = (data) => {
   // console.log("index.vue recevied changement of the chat");
-  alert(JSON.stringify(data));
+  // alert(JSON.stringify(data));
   state.data = data;
 };
 </script>

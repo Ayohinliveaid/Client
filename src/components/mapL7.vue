@@ -38,7 +38,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, reactive, toRefs } from "vue";
+import { onMounted, ref, reactive, toRefs, watch } from "vue";
 import axios from "axios";
 import { Mapbox, GaodeMap } from "@antv/l7-maps";
 import {
@@ -57,11 +57,12 @@ const state = reactive({
   scene: null,
   modificationTimmer: null,
 });
-const { data, pitch, rotation, scene, modificationTimmer } = toRefs(state);
-
+const { data, pitch, rotation, modificationTimmer } = toRefs(state);
+const props = defineProps({ data: Array });
+let scene = null;
 // 点图层气泡图;
 onMounted(() => {
-  scene.value = new Scene({
+  scene = new Scene({
     id: "map",
     map: new GaodeMap({
       pitch: pitch.value,
@@ -72,14 +73,57 @@ onMounted(() => {
     }),
   });
 
-  scene.value.on("loaded", () => {
-    axios
-      // .get("https://gw.alipayobjects.com/os/rmsportal/oVTMqfzuuRFKiDwhPSFL.json")
-      .post("http://127.0.0.1:8000/property/getData")
-      .then((response) => {
-        const data = response.data;
+  // scene.on("loaded", () => {
+  //   axios
+  //     // .get("https://gw.alipayobjects.com/os/rmsportal/oVTMqfzuuRFKiDwhPSFL.json")
+  //     .post("http://127.0.0.1:8000/property/getData")
+  //     .then((response) => {
+  //       const data = response.data;
+  //     });
+  // });
+
+  // scene.on("loaded", () => {
+  //   axios
+  //     .get(
+  //       "https://gw.alipayobjects.com/os/basement_prod/d3564b06-670f-46ea-8edb-842f7010a7c6.json"
+  //     )
+  //     .then((response) => {
+  //       const data = response.data; // data is already parsed as JSONƒ
+  //     });
+  // });
+
+  watch(
+    () => props.data,
+    (newData, oldData) => {
+      if (!Array.isArray(newData)) {
+        chart.changeData([]);
+      } else {
+        const layer = new HeatmapLayer({})
+          .source(data)
+          .shape("heatmap")
+          .size("mag", [0, 0.2]) // weight映射通道
+          .style({
+            intensity: 2,
+            radius: 20,
+            rampColors: {
+              colors: [
+                "#FF4818",
+                "#F7B74A",
+                "#FFF598",
+                "#91EABC",
+                "#2EA9A1",
+                "#206C7C",
+              ].reverse(),
+              positions: [0, 0.2, 0.4, 0.6, 0.8, 1.0],
+            },
+            zIndex: 0,
+          });
+        scene.addLayer(layer);
+
+        console.log("收到新数据", newData);
+
         const pointLayer = new PointLayer({})
-          .source(data, {
+          .source(newData, {
             parser: {
               type: "json",
               x: "j",
@@ -109,40 +153,10 @@ onMounted(() => {
             zIndex: 0,
           })
           .active(true);
-        scene.value.addLayer(pointLayer);
-      });
-  });
-
-  scene.value.on("loaded", () => {
-    axios
-      .get(
-        "https://gw.alipayobjects.com/os/basement_prod/d3564b06-670f-46ea-8edb-842f7010a7c6.json"
-      )
-      .then((response) => {
-        const data = response.data; // data is already parsed as JSONƒ
-        const layer = new HeatmapLayer({})
-          .source(data)
-          .shape("heatmap")
-          .size("mag", [0, 0.2]) // weight映射通道
-          .style({
-            intensity: 2,
-            radius: 20,
-            rampColors: {
-              colors: [
-                "#FF4818",
-                "#F7B74A",
-                "#FFF598",
-                "#91EABC",
-                "#2EA9A1",
-                "#206C7C",
-              ].reverse(),
-              positions: [0, 0.2, 0.4, 0.6, 0.8, 1.0],
-            },
-            zIndex: 0,
-          });
-        scene.value.addLayer(layer);
-      });
-  });
+        scene.addLayer(pointLayer);
+      }
+    }
+  );
 });
 
 //改变倾斜度和旋转度，长按有效
@@ -155,13 +169,13 @@ const modifyAttribute = (attribute, change) => {
       } else if (pitch.value > 60) {
         pitch.value = 60;
       }
-      if (scene.value) {
-        scene.value.setPitch(pitch.value); // 确保使用最新的 pitch 值
+      if (scene) {
+        scene.setPitch(pitch.value); // 确保使用最新的 pitch 值
       }
     } else if (attribute === "rotation") {
       rotation.value += Number(change); // 修改 rotation
-      if (scene.value) {
-        scene.value.setRotation(rotation.value); // 确保使用最新的 rotation 值
+      if (scene) {
+        scene.setRotation(rotation.value); // 确保使用最新的 rotation 值
       }
     }
   }, 50);
