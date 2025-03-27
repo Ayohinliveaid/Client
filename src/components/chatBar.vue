@@ -210,14 +210,23 @@ const saveChat = () => {
 
 //将当前对话的数据根据线性预测进行更新
 const bestFittingModelPredict = () => {
+  let n = [];
+  for (let i = -30; i <= 30; i++) {
+    n.push(i);
+  }
   axios
     // .post("http://127.0.0.1:8000/prediction/bestFittingModelPredict", {
-    .post("http://127.0.0.1:8000/prediction/BPNetworkPredict", {
+    .post("http://127.0.0.1:8000/prediction/ARIMAPredict", {
+      // .post("http://127.0.0.1:8000/prediction/optimizedARIMAPredict", {
+      //需要n为数量
+      // .post("http://127.0.0.1:8000/prediction/BPNetworkPredict", {
+      // .post("http://127.0.0.1:8000/prediction/SVMRegressionPredict", {
+
       data: state.theChat.data,
       // n: [12, 13, 14, 15, 16, 17, 18, 19, 20],
       // n: [-1, -2, -3, -4, 0, 1, 2, 3, 4, 5],
-      n: [-7, -6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7],
-      // n: 10,
+      // n: n,
+      n: 5,
       // degree: 3,
     })
     .then((response) => {
