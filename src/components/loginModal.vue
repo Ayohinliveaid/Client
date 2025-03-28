@@ -8,7 +8,7 @@
     class="windowStyle"
   >
     <template #footer>
-      <a-button key="submit" type="primary" :loading="loading" @click="handleOk">
+      <a-button key="submit" type="primary" :loading="loading" @click="login">
         Submit
       </a-button>
     </template>
@@ -34,17 +34,17 @@
     >
       <a-form-item
         label="Phone Number"
-        name="pn"
+        name="phoneNumber"
         :rules="[{ required: true, message: 'Please input your pn!' }]"
       >
-        <a-input v-model:value="form.pn" />
+        <a-input v-model:value="form.phoneNumber" />
       </a-form-item>
       <a-form-item
         label="Password"
-        name="pw"
+        name="password"
         :rules="[{ required: true, message: 'Please input your pw!' }]"
       >
-        <a-input v-model:value="form.pw" />
+        <a-input v-model:value="form.password" />
       </a-form-item>
     </a-form>
   </a-modal>
@@ -52,16 +52,35 @@
 
 <script setup>
 import { defineProps, defineEmits, ref } from "vue";
+import { USER_LOGIN } from "../apis/user";
 const emit = defineEmits(["update:showLoginModal"]);
 const props = defineProps(["showLoginModal"]);
 const signup = ref(false);
 
 const form = ref({
-  pn: "",
-  pw: "",
+  phoneNumber: "",
+  password: "",
 });
 const login = () => {
-  console.log(form.value);
+  // console.log(form.value);
+  console.log(import.meta.env.VITE_API_BASE_URL);
+
+  USER_LOGIN(form.value)
+    .then((res) => {
+      console.log(res);
+      if (res.request.status == 200) {
+        alert(res.data.message);
+        emit("update:showLoginModal", false);
+      } else {
+        alert("登录失败");
+      }
+    })
+    .catch((err) => {
+      // console.log(err.response.data.error);
+      alert(err.response.data.error);
+      // const errorMessage = err.response?.data?.message || "网络错误，请重试";
+      // alert(errorMessage);
+    });
 };
 
 //取消按钮和遮罩层的点击

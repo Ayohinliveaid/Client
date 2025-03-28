@@ -13,6 +13,7 @@
     "@antv/l7-maps": "^2.22.5",
     "ant-design-vue": "^4.2.6",
     "axios": "^1.8.3",
+    "dotenv": "^16.4.7",
     "less": "^4.2.2",
     "vue": "^3.2.25",
     "vue-router": "^4.5.0"
