@@ -35,6 +35,8 @@
 
 <script setup>
 import { onMounted, ref, reactive, toRefs, computed } from "vue";
+import { PREDICTION_BESTFITTINGMODELPREDICT } from "../apis/prediction";
+import { CHAT_GETSAVEDCHATS } from "../apis/chat";
 import axios from "axios";
 const state = reactive({
   title: "haha",
@@ -94,8 +96,7 @@ const handleMenuClick = ({ key }) => {
 
 //请求对话历史赋值给savedChats，并更新菜单项menuItems
 const getsavedChats = () => {
-  axios
-    .post("http://127.0.0.1:8000/chat/getsavedChats")
+  CHAT_GETSAVEDCHATS()
     .then((response) => {
       state.savedChats = response.data.chats;
       state.menuItems = state.savedChats.map((chat) => {
@@ -107,6 +108,7 @@ const getsavedChats = () => {
       state.theChat = JSON.parse(
         JSON.stringify(state.savedChats[state.savedChats.length - 1])
       );
+      emit("changeTheChat", state.theChat.data);
     })
     .catch((err) => {});
 };
@@ -115,27 +117,24 @@ onMounted(() => {
   getsavedChats();
 });
 
+// 获取 cookie
+const getCookie = (name) => {
+  let value = "; " + document.cookie;
+  let parts = value.split("; " + name + "=");
+  if (parts.length === 2) return parts.pop().split(";").shift();
+};
+
 //将当前对话的数据根据线性预测进行更新
 const bestFittingModelPredict = () => {
   let n = [];
   for (let i = -30; i <= 30; i++) {
     n.push(i);
   }
-  axios
-    // .post("http://127.0.0.1:8000/prediction/polynomialRegressionPredict", {
-    // .post("http://127.0.0.1:8000/prediction/bestFittingModelPredict", {
-    // .post("http://127.0.0.1:8000/prediction/ARIMAPredict", {
-    // .post("http://127.0.0.1:8000/prediction/optimizedARIMAPredict", {
-    //需要n为数量
-    .post("http://127.0.0.1:8000/prediction/BPNetworkPredict", {
-      // .post("http://127.0.0.1:8000/prediction/SVMRegressionPredict", {
-      data: state.theChat.data,
-      // n: [12, 13, 14, 15, 16, 17, 18, 19, 20],
-      n: [-1, -2, -3, -4, 0, 1, 2, 3, 4, 5],
-      // n: n,
-      // n: 5,
-      // degree: 3,
-    })
+
+  PREDICTION_BESTFITTINGMODELPREDICT({
+    data: state.theChat.data,
+    n: [-1, -2, -3, -4, 0, 1, 2, 3, 4, 5],
+  })
     .then((response) => {
       const data = response.data;
       if (data) {
@@ -143,10 +142,14 @@ const bestFittingModelPredict = () => {
         console.log("预测数据", JSON.stringify(data));
         emit("changeTheChat", data);
       } else {
-        alert(data.err);
+        alert(response);
       }
     })
-    .catch((err) => {});
+    .catch((err) => {
+      alert(err.message);
+    });
+  // 获取 "estimaToken" cookie
+  // console.log("token", JSON.stringify(document.cookie)); // 打印 token
 };
 </script>
 

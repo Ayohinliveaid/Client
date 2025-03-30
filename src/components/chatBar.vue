@@ -65,7 +65,7 @@
 
 <script setup>
 import { onMounted, ref, reactive, toRefs, computed } from "vue";
-import { CHAT_GETRESPONSE } from "../apis/chat";
+import { CHAT_GETRESPONSE, CHAT_GETCHATHISTORY } from "../apis/chat";
 import axios from "axios";
 const state = reactive({
   title: "haha",
@@ -225,8 +225,7 @@ const bestFittingModelPredict = () => {
 
 //请求对话历史赋值给chatHistory，并更新菜单项menuItems
 const getChatHistroy = () => {
-  axios
-    .post("http://127.0.0.1:8000/chat/getChatHistroy")
+  CHAT_GETCHATHISTORY()
     .then((response) => {
       state.chatHistory = response.data.chats;
       state.menuItems = state.chatHistory.map((chat) => {
@@ -236,9 +235,9 @@ const getChatHistroy = () => {
         };
       });
       state.menuItems.push({ key: "new", label: "新的问题" });
-      state.theChat = JSON.parse(JSON.stringify(state.chatHistory[9]));
+      // state.theChat = JSON.parse(JSON.stringify(state.chatHistory[9]));
       console.log("emitted data", state.theChat.data);
-      emit("changeTheChat", state.theChat.data);
+      // emit("changeTheChat", state.theChat.data);
     })
     .catch((err) => {});
 };
