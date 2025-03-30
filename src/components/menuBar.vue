@@ -21,6 +21,13 @@
           </a-dropdown>
         </template>
         <div class="contentStyle">{{ theChat.answer }}</div>
+        <div
+          class="saveButtonStyle"
+          style="background-color: azure"
+          @click="bestFittingModelPredict"
+        >
+          <span>预测数据</span>
+        </div>
       </a-collapse-panel>
     </a-collapse>
   </div>
@@ -97,6 +104,9 @@ const getsavedChats = () => {
           label: chat.question,
         };
       });
+      state.theChat = JSON.parse(
+        JSON.stringify(state.savedChats[state.savedChats.length - 1])
+      );
     })
     .catch((err) => {});
 };
@@ -104,6 +114,40 @@ const getsavedChats = () => {
 onMounted(() => {
   getsavedChats();
 });
+
+//将当前对话的数据根据线性预测进行更新
+const bestFittingModelPredict = () => {
+  let n = [];
+  for (let i = -30; i <= 30; i++) {
+    n.push(i);
+  }
+  axios
+    // .post("http://127.0.0.1:8000/prediction/polynomialRegressionPredict", {
+    // .post("http://127.0.0.1:8000/prediction/bestFittingModelPredict", {
+    // .post("http://127.0.0.1:8000/prediction/ARIMAPredict", {
+    // .post("http://127.0.0.1:8000/prediction/optimizedARIMAPredict", {
+    //需要n为数量
+    .post("http://127.0.0.1:8000/prediction/BPNetworkPredict", {
+      // .post("http://127.0.0.1:8000/prediction/SVMRegressionPredict", {
+      data: state.theChat.data,
+      // n: [12, 13, 14, 15, 16, 17, 18, 19, 20],
+      n: [-1, -2, -3, -4, 0, 1, 2, 3, 4, 5],
+      // n: n,
+      // n: 5,
+      // degree: 3,
+    })
+    .then((response) => {
+      const data = response.data;
+      if (data) {
+        // state.theChat.data = data;
+        console.log("预测数据", JSON.stringify(data));
+        emit("changeTheChat", data);
+      } else {
+        alert(data.err);
+      }
+    })
+    .catch((err) => {});
+};
 </script>
 
 <style scoped lang="less" src="/src/styles/components/menuBar.less"></style>

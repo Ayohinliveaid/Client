@@ -65,6 +65,7 @@
 
 <script setup>
 import { onMounted, ref, reactive, toRefs, computed } from "vue";
+import { CHAT_GETRESPONSE } from "../apis/chat";
 import axios from "axios";
 const state = reactive({
   title: "haha",
@@ -135,32 +136,13 @@ const submit = async () => {
     state.theChat.answer = "正在思考";
 
     //请求后端接口，获取答案和数据
-    //获取参数
-    const data = state.theChat.question;
-    // alert(state.theChat.question)
+    const question = { question: state.theChat.question };
+    const res = await CHAT_GETRESPONSE(question);
+    console.log(res);
+    const data = res.data;
+    state.theChat.data = data.data;
+    state.theChat.answer = data.answer;
 
-    state.theChat.answer = "得到的答案得到的答案得到的答案得到的答案得到的答案得到的答案";
-
-    // const response = await axios.post("http://127.0.0.1:8000/property/getData");
-    // state.theChat.data = [
-    //   { x: -5, y: 2 * Math.pow(-5, 3) - 3 * Math.pow(-5, 2) + -5 - 4 }, // x = -5, y = -280
-    //   { x: -4, y: 2 * Math.pow(-4, 3) - 3 * Math.pow(-4, 2) + -4 - 4 }, // x = -4, y = -88
-    //   { x: -3, y: 2 * Math.pow(-3, 3) - 3 * Math.pow(-3, 2) + -3 - 4 }, // x = -3, y = -40
-    //   { x: -2, y: 2 * Math.pow(-2, 3) - 3 * Math.pow(-2, 2) + -2 - 4 }, // x = -2, y = -24
-    //   { x: -1, y: 2 * Math.pow(-1, 3) - 3 * Math.pow(-1, 2) + -1 - 4 }, // x = -1, y = -6
-    //   { x: 0, y: 2 * Math.pow(0, 3) - 3 * Math.pow(0, 2) + 0 - 4 }, // x = 0, y = -4
-    //   { x: 1, y: 2 * Math.pow(1, 3) - 3 * Math.pow(1, 2) + 1 - 4 }, // x = 1, y = -4
-    //   { x: 2, y: 2 * Math.pow(2, 3) - 3 * Math.pow(2, 2) + 2 - 4 }, // x = 2, y = 2
-    //   { x: 3, y: 2 * Math.pow(3, 3) - 3 * Math.pow(3, 2) + 3 - 4 }, // x = 3, y = 38
-    //   // { x: 4, y: 2 * Math.pow(4, 3) - 3 * Math.pow(4, 2) + 4 - 4 }, // x = 4, y = 100
-    //   // { x: 5, y: 2 * Math.pow(5, 3) - 3 * Math.pow(5, 2) + 5 - 4 },
-    // ];
-    for (let i = -10; i <= 10; i++) {
-      state.theChat.data.push({
-        x: i,
-        y: -Math.pow(i, 3) - 3 * Math.pow(i, 2) + i - 4,
-      });
-    }
     // alert(JSON.stringify(state.theChat.data));
 
     //存储到chatHistory列表
@@ -170,11 +152,10 @@ const submit = async () => {
     //请求chatHistory列表，更新前端为最新状态，当前对话的id更新为数据库中id
     getChatHistroy();
     state.theChat.id = state.chatHistory[9].id;
+    console.log("theChat", state.theChat);
   } catch (err) {
-    console.log(err.message);
+    alert(err.message);
   }
-
-  emit("changeTheChat", state.theChat.data);
 };
 
 // 动态调整textarea高度
@@ -256,6 +237,7 @@ const getChatHistroy = () => {
       });
       state.menuItems.push({ key: "new", label: "新的问题" });
       state.theChat = JSON.parse(JSON.stringify(state.chatHistory[9]));
+      console.log("emitted data", state.theChat.data);
       emit("changeTheChat", state.theChat.data);
     })
     .catch((err) => {});
@@ -267,3 +249,6 @@ onMounted(() => {
 </script>
 
 <style scoped lang="less" src="/src/styles/components/chatBar.less"></style>
+
+// for (let i = -10; i <= 10; i++) { // state.theChat.data.push({ // x: i, // y:
+-Math.pow(i, 3) - 3 * Math.pow(i, 2) + i - 4, // }); // }

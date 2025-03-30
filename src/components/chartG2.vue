@@ -26,6 +26,20 @@ const props = defineProps({ data: Array });
 // const chartContainer = ref(null);
 let chart = null;
 
+const updateChart = (data, xField, yField) => {
+  chart.clear(); // 清除旧的绘图
+  chart
+    .point()
+    .data(data)
+    .encode("x", xField) // 使用动态 X 轴字段
+    .encode("y", yField) // 使用动态 Y 轴字段
+    .encode("size", 8)
+    .scale("x", { type: "linear" })
+    .style("fill", "steelblue");
+
+  chart.render();
+};
+
 onMounted(() => {
   chart = new Chart({
     container: "container", // 确保容器已挂载
@@ -50,8 +64,11 @@ onMounted(() => {
         chart.changeData([]);
       } else {
         // alert("图表组件收到新数据", JSON.stringify(newData));
-        console.log("图表组件newData:", newData);
-        chart.changeData(newData);
+        console.log("received newData:", newData);
+        // chart.changeData(newData);
+        const keys = Object.keys(newData[0]);
+        updateChart(newData, keys[0], keys[1]);
+        chart.changeData(newData); //似乎请求数据后虽然改变了encode，但是图表需要刷新页面才能显示
       }
     }
   );

@@ -31,8 +31,8 @@ const state = reactive({
   title: "hah",
   theMapL7: null,
   theChartG2: null,
-  chatBarActiveKey: [3],
-  menuBarActiveKey: [],
+  chatBarActiveKey: [],
+  menuBarActiveKey: [3],
   showLoginModal: false,
   data: [],
 });
