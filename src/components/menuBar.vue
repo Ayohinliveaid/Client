@@ -86,7 +86,7 @@ const activeKeyComputed = computed({
   get: () => props.activeKey,
   set: (value) => {
     emit("update:activeKey", value);
-    getsavedChats();
+    getSavedChats();
   },
 });
 
@@ -99,34 +99,38 @@ const handleMenuClick = ({ key }) => {
 };
 
 //请求对话历史赋值给savedChats，并更新菜单项menuItems
-const getsavedChats = () => {
-  CHAT_GETSAVEDCHATS()
-    .then((response) => {
-      state.savedChats = response.data.chats;
-      state.menuItems = state.savedChats.map((chat) => {
-        return {
-          key: chat.id,
-          label: chat.question,
-        };
-      });
-      state.theChat = JSON.parse(
-        JSON.stringify(state.savedChats[state.savedChats.length - 1])
-      );
-      emit("changeTheChat", state.theChat.data);
-    })
-    .catch((err) => {});
+const getSavedChats = async () => {
+  try {
+    const response = await CHAT_GETSAVEDCHATS(); // 等待请求完成
+    state.savedChats = response.data.chats;
+    state.menuItems = state.savedChats.map((chat) => ({
+      key: chat.id,
+      label: chat.question,
+    }));
+    updateTheChat();
+    console.log("getSavedChats：state.savedChats", state.savedChats);
+  } catch (err) {
+    console.error("获取对话历史失败", err);
+  }
 };
 
-onMounted(() => {
+const updateTheChat = () => {
+  state.theChat = JSON.parse(
+    JSON.stringify(state.savedChats[state.savedChats.length - 1])
+  );
+  emit("changeTheChat", state.theChat.data);
+};
+
+onMounted(async () => {
   if (loginState) {
     //登录状态才会自动请求接口
-    getsavedChats();
+    await getSavedChats(); //如果getSavedChats内部用then则无效
   }
 
   watch(
     () => props.savedChat,
     (newData, oldData) => {
-      getsavedChats();
+      getSavedChats();
     }
   );
 });
@@ -141,7 +145,8 @@ const deleteChat = () => {
         alert(data.message);
         emit("deleteTheChat", chat);
         console.log("deleteTheChat", JSON.stringify(chat));
-        getsavedChats();
+        getSavedChats();
+        updateTheChat();
       } else {
         alert(data.err);
       }

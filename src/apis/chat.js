@@ -12,7 +12,7 @@ const CHAT_GETCHATHISTORY = () =>
 const CHAT_GETSAVEDCHATS = () =>
   requestURL(VITE_API_BASE_URL + "/chat/getSavedChats", "post");
 
-//获取保存对话列表
+//删除当前对话列表
 const CHAT_DELETETHECHAT = (chat) =>
   requestURL(VITE_API_BASE_URL + "/chat/deleteTheChat", "post", chat);
 
@@ -20,10 +20,15 @@ const CHAT_DELETETHECHAT = (chat) =>
 const CHAT_SAVETHECHAT = (chat) =>
   requestURL(VITE_API_BASE_URL + "/chat/saveTheChat", "post", chat);
 
+//更新对话历史记录列表
+const CHAT_UPDATECHATHISTORY = (chat) =>
+  requestURL(VITE_API_BASE_URL + "/chat/updateChatHistory", "post", chat);
+
 export {
   CHAT_GETRESPONSE,
   CHAT_GETSAVEDCHATS,
   CHAT_GETCHATHISTORY,
   CHAT_SAVETHECHAT,
   CHAT_DELETETHECHAT,
+  CHAT_UPDATECHATHISTORY,
 };

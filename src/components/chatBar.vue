@@ -65,7 +65,14 @@
 
 <script setup>
 import { onMounted, ref, reactive, toRefs, computed, watch } from "vue";
-import { CHAT_GETRESPONSE, CHAT_GETCHATHISTORY, CHAT_SAVETHECHAT } from "../apis/chat";
+import {
+  CHAT_GETRESPONSE,
+  CHAT_GETCHATHISTORY,
+  CHAT_SAVETHECHAT,
+  CHAT_UPDATECHATHISTORY,
+} from "../apis/chat";
+import { PREDICTION_BESTFITTINGMODELPREDICT } from "../apis/prediction";
+
 import axios from "axios";
 const state = reactive({
   title: "haha",
@@ -130,28 +137,70 @@ const handleMenuClick = ({ key }) => {
     emit("changeTheChat", state.theChat.data);
   }
 };
+//请求分段数据
+const fetchStream = async (api, body) => {
+  try {
+    const response = await fetch(api, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body), // 发送请求体
+    });
 
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split("\n");
+      buffer = lines.pop(); // 保存未完成的行
+
+      for (const line of lines) {
+        if (line.trim()) {
+          try {
+            const json = JSON.parse(line);
+            console.log(json);
+            state.theChat.answer = json.answer; // 更新响应式数据
+            if (json.step == 4) {
+              state.theChat.data = json.data;
+              emit("changeTheChat", state.theChat.data);
+
+              console.log("step4", json.data);
+            }
+          } catch (err) {
+            console.error("JSON解析失败:", err);
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.error("请求失败:", err);
+  }
+};
 //提交方法
 const submit = async () => {
   try {
     state.theChat.answer = "正在思考";
 
-    //请求后端接口，获取答案和数据
+    // //请求后端接口，获取答案和数据
     const question = { question: state.theChat.question };
-    const res = await CHAT_GETRESPONSE(question);
-    console.log(res);
-    const data = res.data;
-    state.theChat.data = data.data;
-    state.theChat.answer = data.answer;
 
-    // alert(JSON.stringify(state.theChat.data));
+    //分段请求getresponse
+    const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+    await fetchStream(VITE_API_BASE_URL + "/chat/getResponse", question);
 
     //存储到chatHistory列表
-    await axios.post("http://127.0.0.1:8000/chat/updateChatHistory", {
-      chat: state.theChat,
-    });
+    await CHAT_UPDATECHATHISTORY({ chat: state.theChat });
     //请求chatHistory列表，更新前端为最新状态，当前对话的id更新为数据库中id
     getChatHistroy();
+    // updataTheChat();
     state.theChat.id = state.chatHistory[9].id;
     console.log("theChat", state.theChat);
   } catch (err) {
@@ -196,21 +245,22 @@ const bestFittingModelPredict = () => {
   for (let i = -30; i <= 30; i++) {
     n.push(i);
   }
-  axios
-    // .post("http://127.0.0.1:8000/prediction/bestFittingModelPredict", {
-    .post("http://127.0.0.1:8000/prediction/ARIMAPredict", {
-      // .post("http://127.0.0.1:8000/prediction/optimizedARIMAPredict", {
-      //需要n为数量
-      // .post("http://127.0.0.1:8000/prediction/BPNetworkPredict", {
-      // .post("http://127.0.0.1:8000/prediction/SVMRegressionPredict", {
+  // axios
+  //   // .post("http://127.0.0.1:8000/prediction/bestFittingModelPredict", {
+  //   .post("http://127.0.0.1:8000/prediction/ARIMAPredict", {
+  //     // .post("http://127.0.0.1:8000/prediction/optimizedARIMAPredict", {
+  //     //需要n为数量
+  //     // .post("http://127.0.0.1:8000/prediction/BPNetworkPredict", {
+  //     // .post("http://127.0.0.1:8000/prediction/SVMRegressionPredict", {
 
-      data: state.theChat.data,
-      // n: [12, 13, 14, 15, 16, 17, 18, 19, 20],
-      // n: [-1, -2, -3, -4, 0, 1, 2, 3, 4, 5],
-      // n: n,
-      n: 5,
-      // degree: 3,
-    })
+  //     data: state.theChat.data,
+  //     // n: [12, 13, 14, 15, 16, 17, 18, 19, 20],
+  //     // n: [-1, -2, -3, -4, 0, 1, 2, 3, 4, 5],
+  //     // n: n,
+  //     n: 5,
+  //     // degree: 3,
+  //   })
+  PREDICTION_BESTFITTINGMODELPREDICT({ data: state.theChat.data, n: [1, 2, 3] })
     .then((response) => {
       const data = response.data;
       if (data) {
@@ -242,6 +292,12 @@ const getChatHistroy = () => {
     .catch((err) => {});
 };
 
+const updataTheChat = () => {
+  //请求列表和选中当前theChat分开控制，需要调用当前方法执行
+  state.theChat = JSON.parse(JSON.stringify(state.chatHistory[9]));
+  emit("changeTheChat", state.theChat.data);
+};
+
 onMounted(() => {
   if (loginState) {
     getChatHistroy();
@@ -250,7 +306,7 @@ onMounted(() => {
     () => props.deletedChat,
     (newData, oldData) => {
       getChatHistroy();
-      state.theChat = JSON.parse(JSON.stringify(state.chatHistory[9]));
+      // updataTheChat();
     }
   );
 });
