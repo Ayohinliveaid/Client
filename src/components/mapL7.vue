@@ -59,6 +59,7 @@ const state = reactive({
 });
 const { data, pitch, rotation, modificationTimmer } = toRefs(state);
 const props = defineProps({ data: Array });
+const loginState = sessionStorage.getItem("estimaLoginState");
 let scene = null;
 // 点图层气泡图;
 onMounted(() => {

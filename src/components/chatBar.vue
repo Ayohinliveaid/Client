@@ -64,8 +64,8 @@
 </template>
 
 <script setup>
-import { onMounted, ref, reactive, toRefs, computed } from "vue";
-import { CHAT_GETRESPONSE, CHAT_GETCHATHISTORY } from "../apis/chat";
+import { onMounted, ref, reactive, toRefs, computed, watch } from "vue";
+import { CHAT_GETRESPONSE, CHAT_GETCHATHISTORY, CHAT_SAVETHECHAT } from "../apis/chat";
 import axios from "axios";
 const state = reactive({
   title: "haha",
@@ -93,8 +93,9 @@ const state = reactive({
     data: [],
   },
 });
-const props = defineProps({ activeKey: Array });
-const emit = defineEmits(["update:activeKey", "changeTheChat"]); // 声明事件用于 v-model 绑定
+const props = defineProps({ activeKey: Array, deletedChat: Object });
+const emit = defineEmits(["update:activeKey", "changeTheChat", "saveTheChat"]); // 声明事件用于 v-model 绑定
+const loginState = sessionStorage.getItem("estimaLoginState");
 //结构赋值每一个基本类型变量
 const {
   inputBox,
@@ -175,13 +176,13 @@ const saveChat = () => {
     "当前theChat的id",
     state.theChat.id
   );
-  axios
-    .post("http://127.0.0.1:8000/chat/saveTheChat", { chat: chat })
+  CHAT_SAVETHECHAT({ chat: chat })
     .then((response) => {
       const data = response.data;
       if (data.message) {
         alert(data.message);
         state.theChat.saved = 1;
+        emit("saveTheChat", state.theChat);
       } else {
         alert(data.err);
       }
@@ -235,7 +236,6 @@ const getChatHistroy = () => {
         };
       });
       state.menuItems.push({ key: "new", label: "新的问题" });
-      // state.theChat = JSON.parse(JSON.stringify(state.chatHistory[9]));
       console.log("emitted data", state.theChat.data);
       // emit("changeTheChat", state.theChat.data);
     })
@@ -243,7 +243,16 @@ const getChatHistroy = () => {
 };
 
 onMounted(() => {
-  getChatHistroy();
+  if (loginState) {
+    getChatHistroy();
+  }
+  watch(
+    () => props.deletedChat,
+    (newData, oldData) => {
+      getChatHistroy();
+      state.theChat = JSON.parse(JSON.stringify(state.chatHistory[9]));
+    }
+  );
 });
 </script>
 

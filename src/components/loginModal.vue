@@ -60,7 +60,7 @@ const signup = ref(false);
 // const loginState = computed(() => {
 //   return sessionStorage.getItem("estimaLoginState");
 // });
-const loginState = ref(sessionStorage.getItem("estimaLoginState"));
+const loginState = sessionStorage.getItem("estimaLoginState");
 
 const form = ref({
   phoneNumber: "19106537806",

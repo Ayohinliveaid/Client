@@ -12,4 +12,18 @@ const CHAT_GETCHATHISTORY = () =>
 const CHAT_GETSAVEDCHATS = () =>
   requestURL(VITE_API_BASE_URL + "/chat/getSavedChats", "post");
 
-export { CHAT_GETRESPONSE, CHAT_GETSAVEDCHATS, CHAT_GETCHATHISTORY };
+//获取保存对话列表
+const CHAT_DELETETHECHAT = (chat) =>
+  requestURL(VITE_API_BASE_URL + "/chat/deleteTheChat", "post", chat);
+
+//获取保存对话列表
+const CHAT_SAVETHECHAT = (chat) =>
+  requestURL(VITE_API_BASE_URL + "/chat/saveTheChat", "post", chat);
+
+export {
+  CHAT_GETRESPONSE,
+  CHAT_GETSAVEDCHATS,
+  CHAT_GETCHATHISTORY,
+  CHAT_SAVETHECHAT,
+  CHAT_DELETETHECHAT,
+};

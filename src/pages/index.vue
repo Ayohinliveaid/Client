@@ -4,13 +4,17 @@
     <!-- <mapL7 v-bind:data="data" ref="theMapL7"></mapL7> -->
     <chatBar
       v-model:activeKey="chatBarActiveKey"
+      v-bind:deletedChat="deletedChat"
       ref="theChatBar"
       @changeTheChat="handleChangeTheChat"
+      @saveTheChat="handleSaveTheChat"
     ></chatBar>
     <menuBar
       v-model:activeKey="menuBarActiveKey"
+      v-bind:savedChat="savedChat"
       ref="theChatBar"
       @changeTheChat="handleChangeTheChat"
+      @deleteTheChat="handleDeleteTheChat"
     ></menuBar>
     <div class="userStyle" ref="user" v-on:click="toggleShowLoginModal">Login</div>
     <loginModal v-model:showLoginModal="showLoginModal" />
@@ -35,6 +39,8 @@ const state = reactive({
   menuBarActiveKey: [3],
   showLoginModal: false,
   data: [],
+  savedChat: {},
+  deletedChat: [],
 });
 const {
   title,
@@ -44,6 +50,8 @@ const {
   menuBarActiveKey,
   showLoginModal,
   data,
+  savedChat,
+  deletedChat,
 } = toRefs(state);
 
 //控制菜单点击后不收起
@@ -117,6 +125,12 @@ const handleChangeTheChat = (data) => {
   // console.log("index.vue recevied changement of the chat");
   // alert(JSON.stringify(data));
   state.data = data;
+};
+const handleSaveTheChat = (savedChat) => {
+  state.savedChat = savedChat;
+};
+const handleDeleteTheChat = (deletedChat) => {
+  state.deletedChat = deletedChat;
 };
 </script>
 

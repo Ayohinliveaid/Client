@@ -28,15 +28,18 @@
         >
           <span>预测数据</span>
         </div>
+        <div class="saveButtonStyle" @click="deleteChat">
+          <span>删除这个问答</span>
+        </div>
       </a-collapse-panel>
     </a-collapse>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref, reactive, toRefs, computed } from "vue";
+import { onMounted, ref, reactive, toRefs, computed, watch } from "vue";
 import { PREDICTION_BESTFITTINGMODELPREDICT } from "../apis/prediction";
-import { CHAT_GETSAVEDCHATS } from "../apis/chat";
+import { CHAT_GETSAVEDCHATS, CHAT_DELETETHECHAT } from "../apis/chat";
 import axios from "axios";
 const state = reactive({
   title: "haha",
@@ -62,8 +65,9 @@ const state = reactive({
     saved: 0,
   },
 });
-const props = defineProps({ activeKey: Array });
-const emit = defineEmits(["update:activeKey", "changeTheChat"]); // 声明事件用于 v-model 绑定
+const props = defineProps({ activeKey: Array, savedChat: Object });
+const emit = defineEmits(["update:activeKey", "changeTheChat", "deleteTheChat"]); // 声明事件用于 v-model 绑定
+const loginState = sessionStorage.getItem("estimaLoginState");
 //结构赋值每一个基本类型变量
 const {
   inputBox,
@@ -114,8 +118,36 @@ const getsavedChats = () => {
 };
 
 onMounted(() => {
-  getsavedChats();
+  if (loginState) {
+    //登录状态才会自动请求接口
+    getsavedChats();
+  }
+
+  watch(
+    () => props.savedChat,
+    (newData, oldData) => {
+      getsavedChats();
+    }
+  );
 });
+
+//删除当前对话
+const deleteChat = () => {
+  const chat = state.theChat;
+  CHAT_DELETETHECHAT({ chat: chat })
+    .then((response) => {
+      const data = response.data;
+      if (data.message) {
+        alert(data.message);
+        emit("deleteTheChat", chat);
+        console.log("deleteTheChat", JSON.stringify(chat));
+        getsavedChats();
+      } else {
+        alert(data.err);
+      }
+    })
+    .catch((err) => {});
+};
 
 // 获取 cookie
 const getCookie = (name) => {

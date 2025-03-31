@@ -23,6 +23,7 @@ const state = reactive({});
 const {} = toRefs(state);
 
 const props = defineProps({ data: Array });
+const loginState = sessionStorage.getItem("estimaLoginState");
 // const chartContainer = ref(null);
 let chart = null;
 
@@ -64,7 +65,7 @@ onMounted(() => {
         chart.changeData([]);
       } else {
         // alert("图表组件收到新数据", JSON.stringify(newData));
-        console.log("received newData:", newData);
+        // console.log("received newData:", newData);
         // chart.changeData(newData);
         const keys = Object.keys(newData[0]);
         updateChart(newData, keys[0], keys[1]);
