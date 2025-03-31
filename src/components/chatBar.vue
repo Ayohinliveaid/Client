@@ -26,7 +26,10 @@
             </template>
           </a-dropdown>
         </template>
-        <div class="contentStyle">{{ theChat.answer }}</div>
+        <div class="contentStyle">
+          {{ theChat.answer }}
+          <div v-if="showDot" class="dot" ref="dotRef"></div>
+        </div>
         <div
           class="saveButtonStyle"
           style="background-color: azure"
@@ -64,7 +67,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, reactive, toRefs, computed, watch } from "vue";
+import { onMounted, onUnmounted, ref, reactive, toRefs, computed, watch } from "vue";
 import {
   CHAT_GETRESPONSE,
   CHAT_GETCHATHISTORY,
@@ -78,6 +81,7 @@ const state = reactive({
   title: "haha",
   inputBox: null,
   chatSet: null,
+  showDot: false,
 
   dropDownHeader: "hahah",
   menuItems: [
@@ -114,6 +118,7 @@ const {
   menuItems,
   chatHistory,
   theChat,
+  showDot,
 } = toRefs(state);
 
 //控制展开，计算属性用于双向绑定
@@ -188,6 +193,8 @@ const fetchStream = async (api, body) => {
 const submit = async () => {
   try {
     state.theChat.answer = "正在思考";
+    animationFrameId = requestAnimationFrame(animate);
+    state.showDot = true;
 
     // //请求后端接口，获取答案和数据
     const question = { question: state.theChat.question };
@@ -199,12 +206,15 @@ const submit = async () => {
     //存储到chatHistory列表
     await CHAT_UPDATECHATHISTORY({ chat: state.theChat });
     //请求chatHistory列表，更新前端为最新状态，当前对话的id更新为数据库中id
-    getChatHistroy();
+    await getChatHistory();
     // updataTheChat();
     state.theChat.id = state.chatHistory[9].id;
     console.log("theChat", state.theChat);
+    state.showDot = false;
+    cancelAnimationFrame(animationFrameId);
   } catch (err) {
     alert(err.message);
+    cancelAnimationFrame(animationFrameId);
   }
 };
 
@@ -275,23 +285,25 @@ const bestFittingModelPredict = () => {
 };
 
 //请求对话历史赋值给chatHistory，并更新菜单项menuItems
-const getChatHistroy = () => {
-  CHAT_GETCHATHISTORY()
-    .then((response) => {
-      state.chatHistory = response.data.chats;
-      state.menuItems = state.chatHistory.map((chat) => {
-        return {
-          key: chat.id,
-          label: chat.question,
-        };
-      });
-      state.menuItems.push({ key: "new", label: "新的问题" });
-      console.log("emitted data", state.theChat.data);
-      // emit("changeTheChat", state.theChat.data);
-    })
-    .catch((err) => {});
-};
+const getChatHistory = async () => {
+  try {
+    const response = await CHAT_GETCHATHISTORY();
+    state.chatHistory = response.data.chats;
 
+    state.menuItems = state.chatHistory.map((chat) => ({
+      key: chat.id,
+      label: chat.question,
+    }));
+
+    state.menuItems.push({ key: "new", label: "新的问题" });
+    console.log("emitted data", state.theChat.data);
+    // emit("changeTheChat", state.theChat.data);
+  } catch (err) {
+    console.error("获取聊天历史失败:", err);
+    // 可选的错误处理，如显示用户提示
+    // state.error = "加载历史记录失败，请重试";
+  }
+};
 const updataTheChat = () => {
   //请求列表和选中当前theChat分开控制，需要调用当前方法执行
   state.theChat = JSON.parse(JSON.stringify(state.chatHistory[9]));
@@ -300,16 +312,40 @@ const updataTheChat = () => {
 
 onMounted(() => {
   if (loginState) {
-    getChatHistroy();
+    getChatHistory();
   }
   watch(
     () => props.deletedChat,
     (newData, oldData) => {
-      getChatHistroy();
+      getChatHistory();
       // updataTheChat();
     }
   );
 });
+
+//小球跳动的函数
+const dotRef = ref(null);
+let startTime = null;
+let animationFrameId = null;
+const animate = (timestamp) => {
+  if (!startTime) startTime = timestamp;
+  const elapsed = (timestamp - startTime) / 1000; // 计算秒数
+
+  if (dotRef.value) {
+    const scale = 1 + Math.sin(elapsed * Math.PI * 2) * 0.3; // 让小球变大变小（范围 0.7 ~ 1.3）
+    dotRef.value.style.transform = `scale(${scale})`;
+  }
+
+  animationFrameId = requestAnimationFrame(animate);
+};
+
+// onMounted(() => {
+//   animationFrameId = requestAnimationFrame(animate);
+// });
+
+// onUnmounted(() => {
+//   cancelAnimationFrame(animationFrameId);
+// });
 </script>
 
 <style scoped lang="less" src="/src/styles/components/chatBar.less"></style>
