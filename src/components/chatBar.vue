@@ -102,6 +102,7 @@ const state = reactive({
     answer: "正在思考",
     saved: 0,
     data: [],
+    step: 0,
   },
 });
 const props = defineProps({ activeKey: Array, deletedChat: Object });
@@ -119,6 +120,7 @@ const {
   chatHistory,
   theChat,
   showDot,
+  step,
 } = toRefs(state);
 
 //控制展开，计算属性用于双向绑定
@@ -172,7 +174,8 @@ const fetchStream = async (api, body) => {
           try {
             const json = JSON.parse(line);
             console.log(json);
-            state.theChat.answer = json.answer; // 更新响应式数据
+            state.theChat.answer = json.answer;
+            state.step = json.step; //记录当前获取回答的状态
             if (json.step == 4) {
               state.theChat.data = json.data;
               emit("changeTheChat", state.theChat.data);
@@ -203,13 +206,17 @@ const submit = async () => {
     const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
     await fetchStream(VITE_API_BASE_URL + "/chat/getResponse", question);
 
-    //存储到chatHistory列表
-    await CHAT_UPDATECHATHISTORY({ chat: state.theChat });
-    //请求chatHistory列表，更新前端为最新状态，当前对话的id更新为数据库中id
-    await getChatHistory();
-    // updataTheChat();
-    state.theChat.id = state.chatHistory[9].id;
-    console.log("theChat", state.theChat);
+    if (state.step == 5) {
+      //表示请求成功
+      //存储到chatHistory列表
+      await CHAT_UPDATECHATHISTORY({ chat: state.theChat });
+      //请求chatHistory列表，更新前端为最新状态，当前对话的id更新为数据库中id
+      await getChatHistory();
+      // updataTheChat();
+      state.theChat.id = state.chatHistory[9].id;
+      console.log("theChat", state.theChat);
+    } else {
+    }
     state.showDot = false;
     cancelAnimationFrame(animationFrameId);
   } catch (err) {
