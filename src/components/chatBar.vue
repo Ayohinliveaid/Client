@@ -52,7 +52,7 @@
           <textarea
             id="inputBox"
             ref="inputBox"
-            v-model="theChat.question"
+            v-model="newQuestion"
             placeholder="给Estima发送消息"
             placeholder-class="textarea-placeholder"
             @input="adjustHeight"
@@ -104,6 +104,7 @@ const state = reactive({
     data: [],
     step: 0,
   },
+  newQuestion: "",
 });
 const props = defineProps({ activeKey: Array, deletedChat: Object });
 const emit = defineEmits(["update:activeKey", "changeTheChat", "saveTheChat"]); // 声明事件用于 v-model 绑定
@@ -121,6 +122,7 @@ const {
   theChat,
   showDot,
   step,
+  newQuestion,
 } = toRefs(state);
 
 //控制展开，计算属性用于双向绑定
@@ -200,7 +202,9 @@ const submit = async () => {
     state.showDot = true;
 
     // //请求后端接口，获取答案和数据
-    const question = { question: state.theChat.question };
+    const question = { question: state.newQuestion };
+    state.theChat.question = state.newQuestion;
+    state.newQuestion = "";
 
     //分段请求getresponse
     const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -221,6 +225,7 @@ const submit = async () => {
     cancelAnimationFrame(animationFrameId);
   } catch (err) {
     alert(err.message);
+    state.showDot = false;
     cancelAnimationFrame(animationFrameId);
   }
 };
