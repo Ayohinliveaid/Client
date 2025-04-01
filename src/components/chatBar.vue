@@ -217,7 +217,7 @@ const submit = async () => {
       //请求chatHistory列表，更新前端为最新状态，当前对话的id更新为数据库中id
       await getChatHistory();
       // updataTheChat();
-      state.theChat.id = state.chatHistory[9].id;
+      state.theChat.id = state.chatHistory[state.chatHistory.length - 1].id;
       console.log("theChat", state.theChat);
     } else {
     }
@@ -318,7 +318,9 @@ const getChatHistory = async () => {
 };
 const updataTheChat = () => {
   //请求列表和选中当前theChat分开控制，需要调用当前方法执行
-  state.theChat = JSON.parse(JSON.stringify(state.chatHistory[9]));
+  state.theChat = JSON.parse(
+    JSON.stringify(state.chatHistory[state.chatHistory.length - 1])
+  );
   emit("changeTheChat", state.theChat.data);
 };
 
