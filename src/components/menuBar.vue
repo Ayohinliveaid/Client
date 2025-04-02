@@ -40,7 +40,13 @@
 
 <script setup>
 import { onMounted, ref, reactive, toRefs, computed, watch } from "vue";
-import { PREDICTION_BESTFITTINGMODELPREDICT } from "../apis/prediction";
+import {
+  PREDICTION_BESTFITTINGMODELPREDICT,
+  PREDICTION_ARIMAPREDICT,
+  PREDICTION_OPTIMIZEDARIMAPREDICT,
+  PREDICTION_BPNETWORKPREDICT,
+  PREDICTION_SVMREGRESSIOINPREDICT,
+} from "../apis/prediction";
 import { CHAT_GETSAVEDCHATS, CHAT_DELETETHECHAT } from "../apis/chat";
 import axios from "axios";
 const state = reactive({
@@ -148,7 +154,6 @@ const deleteChat = () => {
         emit("deleteTheChat", chat);
         console.log("deleteTheChat", JSON.stringify(chat));
         getSavedChats();
-        updateTheChat();
       } else {
         alert(data.err);
       }
@@ -170,7 +175,10 @@ const bestFittingModelPredict = () => {
     n.push(i);
   }
 
-  PREDICTION_BESTFITTINGMODELPREDICT({
+  // PREDICTION_BESTFITTINGMODELPREDICT
+  // PREDICTION_BPNETWORKPREDICT
+  // PREDICTION_OPTIMIZEDARIMAPREDICT
+  PREDICTION_SVMREGRESSIOINPREDICT({
     data: state.theChat.data,
     n: [-1, -2, -3, -4, 0, 1, 2, 3, 4, 5],
   })

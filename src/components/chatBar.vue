@@ -74,7 +74,10 @@ import {
   CHAT_SAVETHECHAT,
   CHAT_UPDATECHATHISTORY,
 } from "../apis/chat";
-import { PREDICTION_BESTFITTINGMODELPREDICT } from "../apis/prediction";
+import {
+  PREDICTION_BESTFITTINGMODELPREDICT,
+  PREDICTION_BPNETWORKPREDICT,
+} from "../apis/prediction";
 
 import axios from "axios";
 const state = reactive({
@@ -282,7 +285,7 @@ const bestFittingModelPredict = () => {
   //     n: 5,
   //     // degree: 3,
   //   })
-  PREDICTION_BESTFITTINGMODELPREDICT({ data: state.theChat.data, n: [1, 2, 3] })
+  PREDICTION_BPNETWORKPREDICT({ data: state.theChat.data, n: [1, 2, 3] })
     .then((response) => {
       const data = response.data;
       if (data) {
