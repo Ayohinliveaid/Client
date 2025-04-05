@@ -33,7 +33,7 @@
         <div
           class="saveButtonStyle"
           style="background-color: azure"
-          @click="bestFittingModelPredict"
+          @click="optimizedPolynomialRegressionPredict"
         >
           <span>预测数据</span>
         </div>
@@ -75,7 +75,7 @@ import {
   CHAT_UPDATECHATHISTORY,
 } from "../apis/chat";
 import {
-  PREDICTION_BESTFITTINGMODELPREDICT,
+  PREDICTION_OPTIMIZEDPOLYNOMIALREGRESSIONPREDICT,
   PREDICTION_BPNETWORKPREDICT,
 } from "../apis/prediction";
 
@@ -265,13 +265,13 @@ const saveChat = () => {
 };
 
 //将当前对话的数据根据线性预测进行更新
-const bestFittingModelPredict = () => {
+const optimizedPolynomialRegressionPredict = () => {
   let n = [];
   for (let i = -30; i <= 30; i++) {
     n.push(i);
   }
   // axios
-  //   // .post("http://127.0.0.1:8000/prediction/bestFittingModelPredict", {
+  //   // .post("http://127.0.0.1:8000/prediction/optimizedPolynomialRegressionPredict", {
   //   .post("http://127.0.0.1:8000/prediction/ARIMAPredict", {
   //     // .post("http://127.0.0.1:8000/prediction/optimizedARIMAPredict", {
   //     //需要n为数量

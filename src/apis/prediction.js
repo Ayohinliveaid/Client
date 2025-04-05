@@ -2,44 +2,55 @@ import { requestURL } from "./http";
 //具体某一个接口，只需要在本文件中配置url，请求方式，请求体这三个参数
 const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-//向AI提问并获得回答
-const PREDICTION_BESTFITTINGMODELPREDICT = (dataAndN) =>
+//多项式预测
+
+const PREDICTION_POLYNOMIALREGRESSIONPREDICT = (data) =>
   requestURL(
-    VITE_API_BASE_URL + "/prediction/bestFittingModelPredict",
+    VITE_API_BASE_URL + "/prediction/polynomialRegressionPredict",
     "post",
-    dataAndN
+    data
+  );
+
+//最优多项式预测
+const PREDICTION_OPTIMIZEDPOLYNOMIALREGRESSIONPREDICT = (data) =>
+  requestURL(
+    VITE_API_BASE_URL + "/prediction/optimizedPolynomialRegressionPredict",
+    "post",
+    data
   );
 
 //ARIMA时间序列预测
-const PREDICTION_ARIMAPREDICT = (dataAndN) =>
-  requestURL(VITE_API_BASE_URL + "/prediction/ARIMAPredict", "post", dataAndN);
-const PREDICTION_OPTIMIZEDARIMAPREDICT = (dataAndN) =>
+const PREDICTION_ARIMAPREDICT = (data) =>
+  requestURL(VITE_API_BASE_URL + "/prediction/ARIMAPredict", "post", data);
+const PREDICTION_OPTIMIZEDARIMAPREDICT = (data) =>
   requestURL(
     VITE_API_BASE_URL + "/prediction/optimizedARIMAPredict",
     "post",
-    dataAndN
+    data
   );
 
 //BP神经网络预测
-const PREDICTION_BPNETWORKPREDICT = (dataAndN) =>
-  requestURL(
-    VITE_API_BASE_URL + "/prediction/BPNetworkPredict",
-    "post",
-    dataAndN
-  );
+const PREDICTION_BPNETWORKPREDICT = (data) =>
+  requestURL(VITE_API_BASE_URL + "/prediction/BPNetworkPredict", "post", data);
 
 //SVM回归预测
-const PREDICTION_SVMREGRESSIOINPREDICT = (dataAndN) =>
+const PREDICTION_SVMREGRESSIOINPREDICT = (data) =>
   requestURL(
     VITE_API_BASE_URL + "/prediction/SVMRegressionPredict",
     "post",
-    dataAndN
+    data
   );
 
+//综合回归预测
+const PREDICTION_OPTIMIZEDPREDICT = (data) =>
+  requestURL(VITE_API_BASE_URL + "/prediction/optimizedPredict", "post", data);
+
 export {
-  PREDICTION_BESTFITTINGMODELPREDICT,
+  PREDICTION_POLYNOMIALREGRESSIONPREDICT,
+  PREDICTION_OPTIMIZEDPOLYNOMIALREGRESSIONPREDICT,
   PREDICTION_ARIMAPREDICT,
   PREDICTION_OPTIMIZEDARIMAPREDICT,
   PREDICTION_BPNETWORKPREDICT,
   PREDICTION_SVMREGRESSIOINPREDICT,
+  PREDICTION_OPTIMIZEDPREDICT,
 };

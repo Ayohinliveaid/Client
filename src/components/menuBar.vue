@@ -26,7 +26,7 @@
         <div
           class="saveButtonStyle"
           style="background-color: azure"
-          @click="bestFittingModelPredict"
+          @click="optimizedPolynomialRegressionPredict"
         >
           <span>预测数据</span>
         </div>
@@ -41,11 +41,13 @@
 <script setup>
 import { onMounted, ref, reactive, toRefs, computed, watch } from "vue";
 import {
-  PREDICTION_BESTFITTINGMODELPREDICT,
+  PREDICTION_POLYNOMIALREGRESSIONPREDICT,
+  PREDICTION_OPTIMIZEDPOLYNOMIALREGRESSIONPREDICT,
   PREDICTION_ARIMAPREDICT,
   PREDICTION_OPTIMIZEDARIMAPREDICT,
   PREDICTION_BPNETWORKPREDICT,
   PREDICTION_SVMREGRESSIOINPREDICT,
+  PREDICTION_OPTIMIZEDPREDICT,
 } from "../apis/prediction";
 import { CHAT_GETSAVEDCHATS, CHAT_DELETETHECHAT } from "../apis/chat";
 import axios from "axios";
@@ -169,18 +171,20 @@ const getCookie = (name) => {
 };
 
 //将当前对话的数据根据线性预测进行更新
-const bestFittingModelPredict = () => {
+const optimizedPolynomialRegressionPredict = () => {
   let n = [];
   for (let i = -30; i <= 30; i++) {
     n.push(i);
   }
+  // PREDICTION_POLYNOMIALREGRESSIONPREDICT
 
-  // PREDICTION_BESTFITTINGMODELPREDICT
+  // PREDICTION_OPTIMIZEDPOLYNOMIALREGRESSIONPREDICT
   // PREDICTION_BPNETWORKPREDICT
   // PREDICTION_OPTIMIZEDARIMAPREDICT
-  PREDICTION_SVMREGRESSIOINPREDICT({
+
+  // PREDICTION_SVMREGRESSIOINPREDICT;
+  PREDICTION_OPTIMIZEDPREDICT({
     data: state.theChat.data,
-    n: [-1, -2, -3, -4, 0, 1, 2, 3, 4, 5],
   })
     .then((response) => {
       const data = response.data;
