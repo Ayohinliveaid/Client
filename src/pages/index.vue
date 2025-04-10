@@ -63,30 +63,6 @@ const background = ref(null);
 
 const chatSet = ref(null);
 let canScroll = true;
-//设置对话合集滚动固定距离
-const handleScroll = (event) => {
-  event.preventDefault();
-
-  //避免多次调用，进而降低灵敏度，1s内只调用一次
-  if (!canScroll) return;
-  canScroll = false;
-  setTimeout(() => {
-    canScroll = true;
-  }, 1200);
-
-  const width = parseFloat(window.getComputedStyle(chatSet.value).width);
-  if (event.deltaX > 0) {
-    var distance = Math.ceil(event.deltaX / width) * width;
-  } else {
-    var distance = Math.floor(event.deltaX / width) * width;
-  }
-  console.log(event.deltaX, "px");
-  setTimeout(() => {
-    chatSet.value.scrollLeft -= event.deltaX;
-    chatSet.value.scrollLeft += distance;
-    console.log(event.deltaX, distance, "px");
-  }, 1000);
-};
 
 //点击事件
 // 监听整个页面的点击事件
@@ -109,9 +85,6 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener("click", handleClick);
 });
-
-const layout = ref("layout");
-const chat = ref("chat");
 
 //登录注册模块
 const user = ref(null);

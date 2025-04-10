@@ -1,11 +1,5 @@
 <template>
   <div class="chatBarStyle" ref="chatBar">
-    <!-- <div class="chatSetStyle" @wheel="handleScroll" ref="chatSet">
-      <div class="chatStyle" v-for="i in 3">
-        <div class="outputTextStyle titleStyle" ref="title"></div>
-      </div>
-    </div> -->
-
     <a-collapse v-model:activeKey="activeKeyComputed">
       <a-collapse-panel key="3">
         <template #header>
@@ -355,17 +349,6 @@ const animate = (timestamp) => {
 
   animationFrameId = requestAnimationFrame(animate);
 };
-
-// onMounted(() => {
-//   animationFrameId = requestAnimationFrame(animate);
-// });
-
-// onUnmounted(() => {
-//   cancelAnimationFrame(animationFrameId);
-// });
 </script>
 
 <style scoped lang="less" src="/src/styles/components/chatBar.less"></style>
-
-// for (let i = -10; i <= 10; i++) { // state.theChat.data.push({ // x: i, // y:
--Math.pow(i, 3) - 3 * Math.pow(i, 2) + i - 4, // }); // }
