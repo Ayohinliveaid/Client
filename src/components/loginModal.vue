@@ -1,7 +1,7 @@
 <template>
   <a-modal
     v-model:open="props.showLoginModal"
-    title="Basic Modal"
+    title="登录"
     :closable="false"
     @ok="onOK"
     @cancel="onCancel"
@@ -83,7 +83,7 @@ const login = () => {
         document.cookie = `estima_token=${token}; expires=${expires.toUTCString()}; path=/;`;
         sessionStorage.setItem("estimaLoginState", "1");
         emit("update:showLoginModal", false);
-        alert(res.data.message)
+        alert(res.data.message);
         location.reload();
       } else {
         alert("登录失败");

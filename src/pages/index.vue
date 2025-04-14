@@ -16,7 +16,7 @@
       @changeTheChat="handleChangeTheChat"
       @deleteTheChat="handleDeleteTheChat"
     ></menuBar>
-    <div class="userStyle" ref="user" v-on:click="toggleShowLoginModal">Login</div>
+    <div class="userStyle" ref="user" v-on:click="toggleShowLoginModal">登录</div>
     <loginModal v-model:showLoginModal="showLoginModal" />
   </div>
 </template>

@@ -64,9 +64,8 @@ const state = reactive({
   savedChats: [],
   theChat: {
     id: "",
-    question: "新问题",
-    answer:
-      "获取对输入框的引用，把他的高度设置为滚动高度即可，但由于一次性删除内容后，scrollheight不会马上恢复到最初值，所以需要在之前加入，height为auto的设置",
+    question: "请登录",
+    answer: "请登录",
   },
   newChat: {
     id: "new",
