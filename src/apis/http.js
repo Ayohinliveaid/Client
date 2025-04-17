@@ -33,4 +33,4 @@ const requestURL = (url, method, data = {}) => {
   }
 };
 
-export { requestURL };
+export { getCookie, requestURL };

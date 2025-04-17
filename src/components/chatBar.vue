@@ -72,6 +72,7 @@ import {
   PREDICTION_OPTIMIZEDPOLYNOMIALREGRESSIONPREDICT,
   PREDICTION_BPNETWORKPREDICT,
 } from "../apis/prediction";
+import { getCookie } from "../apis/http";
 
 import axios from "axios";
 const state = reactive({
@@ -145,9 +146,12 @@ const handleMenuClick = ({ key }) => {
 //请求分段数据
 const fetchStream = async (api, body) => {
   try {
+    //手动加入token
+    const token = getCookie("estima_token");
     const response = await fetch(api, {
       method: "POST",
       headers: {
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body), // 发送请求体
@@ -190,7 +194,7 @@ const fetchStream = async (api, body) => {
     console.error("请求失败:", err);
   }
 };
-//提交方法
+//提交提问，获取回答
 const submit = async () => {
   try {
     state.theChat.answer = "正在思考";
