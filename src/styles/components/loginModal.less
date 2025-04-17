@@ -10,16 +10,32 @@
   z-index: 100000;
   padding: 10px;
 
-  .formStyle {
-    display: grid;
-    grid-template-columns: 20% 75%;
-    grid-template-rows: 20% 20% 20% 10%;
+  .flexBox {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     height: 100%;
-    gap: 5%;
-    box-sizing: border-box;
+
+    .formStyle {
+      display: grid;
+      grid-template-columns: 20% 75%;
+      grid-template-rows: 20% 20% 20% 10%;
+      height: 100%;
+      gap: 5%;
+      box-sizing: border-box;
+    }
+
+    .buttonStyle {
+      margin-top: 0rem;
+    }
   }
 }
 
-/deep/ .ant-btn-primary {
-  background-color: #a5ef7a !important;
+::v-deep .ant-tabs-nav-wrap {
+  justify-content: center;
+}
+
+::v-deep .ant-tabs-tabpane {
+  height: 14rem;
+  // overflow: hidden;
 }

@@ -10,4 +10,8 @@ const USER_LOGIN = (data) =>
 const USER_SIGNUP = (data) =>
   requestURL(VITE_API_BASE_URL + "/user/signup", "post", data);
 
-export { USER_LOGIN, USER_SIGNUP };
+//请求用户信息
+const USER_GETUSERINFO = (data) =>
+  requestURL(VITE_API_BASE_URL + "/user/getUserInfo", "post", data);
+
+export { USER_LOGIN, USER_SIGNUP, USER_GETUSERINFO };

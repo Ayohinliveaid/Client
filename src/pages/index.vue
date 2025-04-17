@@ -16,7 +16,9 @@
       @changeTheChat="handleChangeTheChat"
       @deleteTheChat="handleDeleteTheChat"
     ></menuBar>
-    <div class="userStyle" ref="user" v-on:click="toggleShowLoginModal">登录</div>
+    <div class="userStyle" ref="user" v-on:click="toggleShowLoginModal">
+      {{ userText }}
+    </div>
     <loginModal v-model:showLoginModal="showLoginModal" />
   </div>
 </template>
@@ -41,6 +43,7 @@ const state = reactive({
   data: [],
   savedChat: {},
   deletedChat: [],
+  userText: "登录",
 });
 const {
   title,
@@ -52,6 +55,7 @@ const {
   data,
   savedChat,
   deletedChat,
+  userText,
 } = toRefs(state);
 
 //控制菜单点击后不收起
@@ -81,6 +85,11 @@ const handleClick = (event) => {
 };
 onMounted(() => {
   document.addEventListener("click", handleClick);
+  if (!sessionStorage.getItem("estimaLoginState")) {
+    state.userText = "登录";
+  } else {
+    state.userText = "用户";
+  }
 });
 onUnmounted(() => {
   document.removeEventListener("click", handleClick);
