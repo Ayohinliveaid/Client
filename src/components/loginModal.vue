@@ -8,6 +8,9 @@
     class="windowStyle"
   >
     <template #footer>
+      <a-button v-if="!loginState" type="primary" :loading="loading" @click="signup">
+        注册
+      </a-button>
       <a-button
         v-if="!loginState"
         key="submit"
@@ -53,10 +56,9 @@
 
 <script setup>
 import { defineProps, defineEmits, ref, computed } from "vue";
-import { USER_LOGIN } from "../apis/user";
+import { USER_LOGIN, USER_SIGNUP } from "../apis/user";
 const emit = defineEmits(["update:showLoginModal"]);
 const props = defineProps(["showLoginModal"]);
-const signup = ref(false);
 // const loginState = computed(() => {
 //   return sessionStorage.getItem("estimaLoginState");
 // });
@@ -66,6 +68,25 @@ const form = ref({
   phoneNumber: "19106537806",
   password: "A000000",
 });
+
+const signup = () => {
+  USER_SIGNUP(form.value)
+    .then((res) => {
+      if (res.request.status == 200) {
+        // alert(res.data.message);
+        alert(res.data.message);
+        location.reload();
+      } else {
+        alert("登录失败");
+      }
+    })
+    .catch((err) => {
+      // console.log(err.response.data.error);
+      alert(err.response.data.error);
+      // const errorMessage = err.response?.data?.message || "网络错误，请重试";
+      // alert(errorMessage);
+    });
+};
 const login = () => {
   // console.log(form.value);
   console.log(import.meta.env.VITE_API_BASE_URL);
@@ -101,6 +122,7 @@ const logout = () => {
   document.cookie = "estima_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   sessionStorage.removeItem("estimaLoginState");
   emit("update:showLoginModal", false);
+  alert("您已退出登录");
   location.reload();
 };
 
