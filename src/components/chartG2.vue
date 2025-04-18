@@ -18,6 +18,7 @@ import {
 } from "vue";
 import axios from "axios";
 import { Chart } from "@antv/g2";
+import { message } from "ant-design-vue";
 
 const state = reactive({});
 const {} = toRefs(state);
@@ -64,10 +65,16 @@ onMounted(() => {
       if (!Array.isArray(newData)) {
         chart.changeData([]);
       } else {
-        // alert("图表组件收到新数据", JSON.stringify(newData));
+        // message.success(`图表组件收到新数据：${JSON.stringify(newData)}`, 1);
         // console.log("received newData:", newData);
         // chart.changeData(newData);
-        const keys = Object.keys(newData[0]);
+        let keys;
+        for (let i in newData) {
+          if (newData[i]) {
+            keys = Object.keys(newData[i]);
+            break;
+          }
+        }
         updateChart(newData, keys[0], keys[1]);
         chart.changeData(newData); //似乎请求数据后虽然改变了encode，但是图表需要刷新页面才能显示
       }

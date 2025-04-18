@@ -12,7 +12,7 @@
     <menuBar
       v-model:activeKey="menuBarActiveKey"
       v-bind:savedChat="savedChat"
-      ref="theChatBar"
+      ref="theMenuBar"
       @changeTheChat="handleChangeTheChat"
       @deleteTheChat="handleDeleteTheChat"
     ></menuBar>
@@ -63,6 +63,7 @@ const dropdownVisible = ref(false);
 
 // 隐藏对话框回答部分
 const theChatBar = ref(null);
+const theMenuBar = ref(null);
 const background = ref(null);
 
 const chatSet = ref(null);
@@ -78,6 +79,8 @@ const handleClick = (event) => {
     // if (background.value && background.value.contains(event.target)) {
     console.log("点击了 theMapL7");
     chatBarActiveKey.value = [];
+    theChatBar.value.deactivatedTheChatBar();
+
     menuBarActiveKey.value = [];
   } else {
     console.log("点击了theMapL7以外地方");

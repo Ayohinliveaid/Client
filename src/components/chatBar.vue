@@ -1,5 +1,8 @@
 <template>
-  <div class="chatBarStyle" ref="chatBar">
+  <div
+    :class="activeState ? 'chatBarStyle activeStyle' : 'chatBarStyle inactiveStyle'"
+    ref="chatBar"
+  >
     <a-collapse v-model:activeKey="activeKeyComputed">
       <a-collapse-panel key="3">
         <template #header>
@@ -71,10 +74,12 @@ import {
 import {
   PREDICTION_OPTIMIZEDPOLYNOMIALREGRESSIONPREDICT,
   PREDICTION_BPNETWORKPREDICT,
+  PREDICTION_OPTIMIZEDARIMAPREDICT,
+  PREDICTION_OPTIMIZEDPREDICT,
 } from "../apis/prediction";
 import { getCookie } from "../apis/http";
+import { message } from "ant-design-vue";
 
-import axios from "axios";
 const state = reactive({
   title: "haha",
   inputBox: null,
@@ -102,16 +107,20 @@ const state = reactive({
     step: 0,
   },
   newQuestion: "",
+  activeState: false,
 });
-const props = defineProps({ activeKey: Array, deletedChat: Object });
+const props = defineProps({
+  activeKey: Array,
+  deletedChat: Object,
+});
 const emit = defineEmits(["update:activeKey", "changeTheChat", "saveTheChat"]); // 声明事件用于 v-model 绑定
+
 const loginState = sessionStorage.getItem("estimaLoginState");
 //结构赋值每一个基本类型变量
 const {
   inputBox,
   title,
   chatSet,
-
   activeKey,
   dropDownHeader,
   menuItems,
@@ -120,12 +129,28 @@ const {
   showDot,
   step,
   newQuestion,
+  activeState,
 } = toRefs(state);
 
 //控制展开，计算属性用于双向绑定
 const activeKeyComputed = computed({
   get: () => props.activeKey,
   set: (value) => emit("update:activeKey", value),
+});
+
+//对话框活跃状态
+//当前对话框成为活跃框
+const activateTheChatBar = (data) => {
+  emit("changeTheChat", data);
+  state.activeState = true;
+};
+//触发对话框不活跃状态，defineExpose暴露给父组件
+const deactivatedTheChatBar = () => {
+  state.activeState = false;
+};
+// 暴露函数，父组件通过子组件的ref.value.deactivatedTheChatBar调用
+defineExpose({
+  deactivatedTheChatBar,
 });
 
 //菜单点击事件
@@ -140,7 +165,7 @@ const handleMenuClick = ({ key }) => {
     state.theChat = JSON.parse(
       JSON.stringify(state.chatHistory.find((v) => v.id === key))
     );
-    emit("changeTheChat", state.theChat.data);
+    activateTheChatBar(state.theChat.data);
   }
 };
 //请求分段数据
@@ -180,7 +205,7 @@ const fetchStream = async (api, body) => {
             state.step = json.step; //记录当前获取回答的状态
             if (json.step == 4) {
               state.theChat.data = json.data;
-              emit("changeTheChat", state.theChat.data);
+              activateTheChatBar(state.theChat.data);
 
               console.log("step4", json.data);
             }
@@ -197,7 +222,10 @@ const fetchStream = async (api, body) => {
 //提交提问，获取回答
 const submit = async () => {
   try {
-    state.theChat.answer = "正在思考";
+    // state.theChat.answer = "正在思考";
+    // emit("changeTheChat", []);
+    state.theChat = JSON.parse(JSON.stringify(state.newChat));
+    activateTheChatBar(state.theChat.data);
     animationFrameId = requestAnimationFrame(animate);
     state.showDot = true;
 
@@ -210,7 +238,7 @@ const submit = async () => {
     const VITE_API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
     await fetchStream(VITE_API_BASE_URL + "/chat/getResponse", question);
 
-    if (state.step == 5) {
+    if (state.step == 5 && state.theChat.data && state.theChat.data.length > 0) {
       //表示请求成功
       //存储到chatHistory列表
       await CHAT_UPDATECHATHISTORY({ chat: state.theChat });
@@ -282,13 +310,13 @@ const optimizedPolynomialRegressionPredict = () => {
   //     n: 5,
   //     // degree: 3,
   //   })
-  PREDICTION_BPNETWORKPREDICT({ data: state.theChat.data })
+  PREDICTION_OPTIMIZEDPREDICT({ data: state.theChat.data })
     .then((response) => {
       const data = response.data;
       if (data) {
         // state.theChat.data = data;
         console.log("预测数据", JSON.stringify(data));
-        emit("changeTheChat", data);
+        activateTheChatBar(data);
       } else {
         alert(data.err);
       }
@@ -309,7 +337,7 @@ const getChatHistory = async () => {
 
     state.menuItems.push({ key: "new", label: "新的问题" });
     console.log("emitted data", state.theChat.data);
-    // emit("changeTheChat", state.theChat.data);
+    // activateTheChatBar(state.theChat.data);
   } catch (err) {
     console.error("获取聊天历史失败:", err);
     // 可选的错误处理，如显示用户提示
@@ -321,7 +349,7 @@ const updataTheChat = () => {
   state.theChat = JSON.parse(
     JSON.stringify(state.chatHistory[state.chatHistory.length - 1])
   );
-  emit("changeTheChat", state.theChat.data);
+  activateTheChatBar(state.theChat.data);
 };
 
 onMounted(() => {
@@ -337,7 +365,7 @@ onMounted(() => {
   );
 });
 
-//小球跳动的函数
+//小球跳动的函数----------------------------------------------------------------------------------------------------
 const dotRef = ref(null);
 let startTime = null;
 let animationFrameId = null;
