@@ -1,5 +1,8 @@
 <template>
-  <div class="chatBarStyle" ref="chatBar">
+  <div
+    ref="chatBar"
+    :class="activeState ? 'chatBarStyle activeStyle' : 'chatBarStyle inactiveStyle'"
+  >
     <a-collapse v-model:activeKey="activeKeyComputed">
       <a-collapse-panel key="3">
         <template #header>
@@ -73,6 +76,7 @@ const state = reactive({
     answer: "正在思考",
     saved: 0,
   },
+  activeState: false,
 });
 const props = defineProps({ activeKey: Array, savedChat: Object });
 const emit = defineEmits(["update:activeKey", "changeTheChat", "deleteTheChat"]); // 声明事件用于 v-model 绑定
@@ -88,6 +92,7 @@ const {
   menuItems,
   savedChats,
   theChat,
+  activeState,
 } = toRefs(state);
 
 //控制展开，计算属性用于双向绑定
@@ -95,16 +100,30 @@ const activeKeyComputed = computed({
   get: () => props.activeKey,
   set: (value) => {
     emit("update:activeKey", value);
-    getSavedChats();
+    // getSavedChats();
   },
+});
+
+//对话框活跃状态
+//当前对话框成为活跃框
+const activateTheChatBar = (data) => {
+  emit("changeTheChat", data);
+  state.activeState = true;
+};
+//触发对话框不活跃状态，defineExpose暴露给父组件
+const deactivatedTheChatBar = () => {
+  state.activeState = false;
+};
+// 暴露函数，父组件通过子组件的ref.value.deactivatedTheChatBar调用
+defineExpose({
+  deactivatedTheChatBar,
 });
 
 //菜单点击事件
 const handleMenuClick = ({ key }) => {
   emit("update:activeKey", ["3"]);
-
   state.theChat = JSON.parse(JSON.stringify(state.savedChats.find((v) => v.id === key)));
-  emit("changeTheChat", state.theChat.data);
+  activateTheChatBar(state.theChat.data);
 };
 
 //请求对话历史赋值给savedChats，并更新菜单项menuItems
@@ -127,7 +146,7 @@ const updateTheChat = () => {
   state.theChat = JSON.parse(
     JSON.stringify(state.savedChats[state.savedChats.length - 1])
   );
-  emit("changeTheChat", state.theChat.data);
+  activateTheChatBar(state.theChat.data);
 };
 
 onMounted(async () => {
@@ -190,7 +209,7 @@ const optimizedPolynomialRegressionPredict = () => {
       if (data) {
         // state.theChat.data = data;
         console.log("预测数据", JSON.stringify(data));
-        emit("changeTheChat", data);
+        activateTheChatBar(data);
       } else {
         alert(response);
       }

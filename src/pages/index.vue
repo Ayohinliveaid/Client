@@ -6,14 +6,14 @@
       v-model:activeKey="chatBarActiveKey"
       v-bind:deletedChat="deletedChat"
       ref="theChatBar"
-      @changeTheChat="handleChangeTheChat"
+      @changeTheChat="handleChangeTheChat($event, 'theMenuBar')"
       @saveTheChat="handleSaveTheChat"
     ></chatBar>
     <menuBar
       v-model:activeKey="menuBarActiveKey"
       v-bind:savedChat="savedChat"
       ref="theMenuBar"
-      @changeTheChat="handleChangeTheChat"
+      @changeTheChat="handleChangeTheChat($event, 'theChatBar')"
       @deleteTheChat="handleDeleteTheChat"
     ></menuBar>
     <div class="userStyle" ref="user" v-on:click="toggleShowLoginModal">
@@ -79,7 +79,6 @@ const handleClick = (event) => {
     // if (background.value && background.value.contains(event.target)) {
     console.log("点击了 theMapL7");
     chatBarActiveKey.value = [];
-    theChatBar.value.deactivatedTheChatBar();
 
     menuBarActiveKey.value = [];
   } else {
@@ -106,10 +105,15 @@ const toggleShowLoginModal = () => {
 };
 
 //接受对话模块传输的数据
-const handleChangeTheChat = (data) => {
+const handleChangeTheChat = (data, type = null) => {
   // console.log("index.vue recevied changement of the chat");
   // alert(JSON.stringify(data));
   state.data = data;
+  if (type == "theChatBar") {
+    theChatBar.value.deactivatedTheChatBar();
+  } else if (type == "theMenuBar") {
+    theMenuBar.value.deactivatedTheChatBar();
+  }
 };
 const handleSaveTheChat = (savedChat) => {
   state.savedChat = savedChat;
