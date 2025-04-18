@@ -223,7 +223,7 @@ const fetchStream = async (api, body) => {
 const submit = async () => {
   try {
     // state.theChat.answer = "正在思考";
-    // emit("changeTheChat", []);
+
     state.theChat = JSON.parse(JSON.stringify(state.newChat));
     activateTheChatBar(state.theChat.data);
     animationFrameId = requestAnimationFrame(animate);
@@ -312,11 +312,13 @@ const optimizedPolynomialRegressionPredict = () => {
   //   })
   PREDICTION_OPTIMIZEDPREDICT({ data: state.theChat.data })
     .then((response) => {
-      const data = response.data;
+      console.log(response);
+      const result = response.data;
       if (data) {
         // state.theChat.data = data;
         console.log("预测数据", JSON.stringify(data));
-        activateTheChatBar(data);
+        activateTheChatBar(result.data);
+        this.theChat.answer = result.answer;
       } else {
         alert(data.err);
       }

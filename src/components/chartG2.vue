@@ -68,14 +68,17 @@ onMounted(() => {
         // message.success(`图表组件收到新数据：${JSON.stringify(newData)}`, 1);
         // console.log("received newData:", newData);
         // chart.changeData(newData);
-        let keys;
-        for (let i in newData) {
-          if (newData[i]) {
-            keys = Object.keys(newData[i]);
+        let keys, x, y;
+        for (let v of newData) {
+          keys = v ? Object.keys(v) : null;
+          x = keys[0];
+          y = keys[1];
+          if (x && y) {
             break;
           }
         }
-        updateChart(newData, keys[0], keys[1]);
+        console.log(keys);
+        updateChart(newData, x, y);
         chart.changeData(newData); //似乎请求数据后虽然改变了encode，但是图表需要刷新页面才能显示
       }
     }
