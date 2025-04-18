@@ -314,11 +314,11 @@ const optimizedPolynomialRegressionPredict = () => {
     .then((response) => {
       console.log(response);
       const result = response.data;
-      if (data) {
+      if (result) {
         // state.theChat.data = data;
-        console.log("预测数据", JSON.stringify(data));
+        console.log("预测数据", JSON.stringify(result));
         activateTheChatBar(result.data);
-        this.theChat.answer = result.answer;
+        state.theChat.answer = result.answer;
       } else {
         alert(data.err);
       }
