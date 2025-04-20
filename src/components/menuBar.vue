@@ -79,7 +79,12 @@ const state = reactive({
   activeState: false,
 });
 const props = defineProps({ activeKey: Array, savedChat: Object });
-const emit = defineEmits(["update:activeKey", "changeTheChat", "deleteTheChat"]); // 声明事件用于 v-model 绑定
+const emit = defineEmits([
+  "update:activeKey",
+  "changeTheChat",
+  "appendTheChat",
+  "deleteTheChat",
+]); // 声明事件用于 v-model 绑定
 const loginState = sessionStorage.getItem("estimaLoginState");
 //结构赋值每一个基本类型变量
 const {
@@ -195,21 +200,24 @@ const optimizedPolynomialRegressionPredict = () => {
     n.push(i);
   }
   // PREDICTION_POLYNOMIALREGRESSIONPREDICT
-
   // PREDICTION_OPTIMIZEDPOLYNOMIALREGRESSIONPREDICT
   // PREDICTION_BPNETWORKPREDICT
   // PREDICTION_OPTIMIZEDARIMAPREDICT
-
-  // PREDICTION_SVMREGRESSIOINPREDICT;
+  // PREDICTION_SVMREGRESSIOINPREDICT
   PREDICTION_OPTIMIZEDPREDICT({
     data: state.theChat.data,
   })
     .then((response) => {
-      const data = response.data;
-      if (data) {
+      const result = response.data;
+      if (result) {
         // state.theChat.data = data;
-        console.log("预测数据", JSON.stringify(data));
-        activateTheChatBar(data);
+        const dataAndPredictedData = {
+          data: state.theChat.data,
+          predictedData: result.data,
+        };
+        console.log("menuBar中dataAndPredictedData", dataAndPredictedData);
+        state.theChat.answer = result.answer;
+        emit("appendTheChat", dataAndPredictedData); //传输原数据和预测数据，最终到达图表组件
       } else {
         alert(response);
       }

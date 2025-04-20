@@ -23,12 +23,13 @@ import { message } from "ant-design-vue";
 const state = reactive({});
 const {} = toRefs(state);
 
-const props = defineProps({ data: Array });
+const props = defineProps({ data: Array, dataAndPredictedData: Object }); //dataAndPredictedData是一个{data:[],predictedData:[]}对象
 const loginState = sessionStorage.getItem("estimaLoginState");
 // const chartContainer = ref(null);
 let chart = null;
 
-const updateChart = (data, xField, yField) => {
+//完全换成另一个图表。或者在当前的图表上，重叠一个预测图表，需要输入原数据data和预测数据predictedData，xField和yField
+const updateChart = (data, xField, yField, predictedData = null) => {
   chart.clear(); // 清除旧的绘图
   chart
     .point()
@@ -36,11 +37,24 @@ const updateChart = (data, xField, yField) => {
     .encode("x", xField) // 使用动态 X 轴字段
     .encode("y", yField) // 使用动态 Y 轴字段
     .encode("size", 8)
-    .scale("x", { type: "linear" })
-    .style("fill", "steelblue");
+    .style("fill", "steelblue")
+    .style("shape", "circle");
+
+  if (predictedData) {
+    chart
+      .point()
+      .data(predictedData)
+      .encode("x", xField)
+      .encode("y", yField)
+      .encode("size", 8)
+      .style("fill", "red")
+      .style("stroke", "red")
+      .style("shape", "circle");
+  }
 
   chart.render();
 };
+// //在当前的图表上，重叠一个预测图表，需要输入原数据data和预测数据predictedData，xField和yField
 
 onMounted(() => {
   chart = new Chart({
@@ -80,6 +94,28 @@ onMounted(() => {
         console.log(keys);
         updateChart(newData, x, y);
         chart.changeData(newData); //似乎请求数据后虽然改变了encode，但是图表需要刷新页面才能显示
+      }
+    }
+  );
+  watch(
+    () => props.dataAndPredictedData,
+    (newData, oldData) => {
+      console.log("chartG2中dataAndPredictedData监听到变化:", newData);
+      if (!Array.isArray(newData.data) || !Array.isArray(newData.predictedData)) {
+        chart.changeData([]);
+      } else {
+        let keys, x, y;
+        for (let v of newData.data) {
+          keys = v ? Object.keys(v) : null;
+          x = keys[0];
+          y = keys[1];
+          if (x && y) {
+            break;
+          }
+        }
+        console.log(keys);
+        updateChart(newData.data, x, y, newData.predictedData);
+        // chart.changeData(newData); //似乎请求数据后虽然改变了encode，但是图表需要刷新页面才能显示
       }
     }
   );

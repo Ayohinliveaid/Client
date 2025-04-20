@@ -113,7 +113,12 @@ const props = defineProps({
   activeKey: Array,
   deletedChat: Object,
 });
-const emit = defineEmits(["update:activeKey", "changeTheChat", "saveTheChat"]); // 声明事件用于 v-model 绑定
+const emit = defineEmits([
+  "update:activeKey",
+  "changeTheChat",
+  "appendTheChat",
+  "saveTheChat",
+]); // 声明事件用于 v-model 绑定
 
 const loginState = sessionStorage.getItem("estimaLoginState");
 //结构赋值每一个基本类型变量
@@ -295,29 +300,19 @@ const optimizedPolynomialRegressionPredict = () => {
   for (let i = -30; i <= 30; i++) {
     n.push(i);
   }
-  // axios
-  //   // .post("http://127.0.0.1:8000/prediction/optimizedPolynomialRegressionPredict", {
-  //   .post("http://127.0.0.1:8000/prediction/ARIMAPredict", {
-  //     // .post("http://127.0.0.1:8000/prediction/optimizedARIMAPredict", {
-  //     //需要n为数量
-  //     // .post("http://127.0.0.1:8000/prediction/BPNetworkPredict", {
-  //     // .post("http://127.0.0.1:8000/prediction/SVMRegressionPredict", {
-
-  //     data: state.theChat.data,
-  //     // n: [12, 13, 14, 15, 16, 17, 18, 19, 20],
-  //     // n: [-1, -2, -3, -4, 0, 1, 2, 3, 4, 5],
-  //     // n: n,
-  //     n: 5,
-  //     // degree: 3,
-  //   })
   PREDICTION_OPTIMIZEDPREDICT({ data: state.theChat.data })
     .then((response) => {
       console.log(response);
       const result = response.data;
       if (result) {
         // state.theChat.data = data;
-        console.log("预测数据", JSON.stringify(result));
-        activateTheChatBar(result.data);
+        // console.log("预测数据", JSON.stringify(result));
+        const dataAndPredictedData = {
+          data: state.theChat.data,
+          predictedData: result.data,
+        };
+        console.log("chatBar中dataAndPredictedData", dataAndPredictedData);
+        emit("appendTheChat", dataAndPredictedData); //传输原数据和预测数据，最终到达图表组件
         state.theChat.answer = result.answer;
       } else {
         alert(data.err);

@@ -1,12 +1,17 @@
 <template>
   <div class="backgroundStyle" ref="background">
-    <chartG2 v-bind:data="data" ref="theChartG2"></chartG2>
+    <chartG2
+      v-bind:data="data"
+      v-bind:dataAndPredictedData="dataAndPredictedData"
+      ref="theChartG2"
+    ></chartG2>
     <!-- <mapL7 v-bind:data="data" ref="theMapL7"></mapL7> -->
     <chatBar
       v-model:activeKey="chatBarActiveKey"
       v-bind:deletedChat="deletedChat"
       ref="theChatBar"
       @changeTheChat="handleChangeTheChat($event, 'theMenuBar')"
+      @appendTheChat="handleAppendTheChat($event)"
       @saveTheChat="handleSaveTheChat"
     ></chatBar>
     <menuBar
@@ -14,6 +19,7 @@
       v-bind:savedChat="savedChat"
       ref="theMenuBar"
       @changeTheChat="handleChangeTheChat($event, 'theChatBar')"
+      @appendTheChat="handleAppendTheChat($event)"
       @deleteTheChat="handleDeleteTheChat"
     ></menuBar>
     <div class="userStyle" ref="user" v-on:click="toggleShowLoginModal">
@@ -41,6 +47,7 @@ const state = reactive({
   menuBarActiveKey: [3],
   showLoginModal: false,
   data: [],
+  dataAndPredictedData: {},
   savedChat: {},
   deletedChat: [],
   userText: "登录",
@@ -53,6 +60,7 @@ const {
   menuBarActiveKey,
   showLoginModal,
   data,
+  dataAndPredictedData,
   savedChat,
   deletedChat,
   userText,
@@ -114,6 +122,13 @@ const handleChangeTheChat = (data, type = null) => {
   } else if (type == "theMenuBar") {
     theMenuBar.value.deactivatedTheChatBar();
   }
+};
+
+//预测模块中，将数据更新为原始数据和预测数据的叠加
+const handleAppendTheChat = (dataAndPredictedData) => {
+  console.log("index中handleAppendTheChat收到预测数据");
+  state.dataAndPredictedData = dataAndPredictedData;
+  console.log("index中最新state.dataAndPredictedData", state.dataAndPredictedData);
 };
 const handleSaveTheChat = (savedChat) => {
   state.savedChat = savedChat;
