@@ -7,10 +7,9 @@
       <a-collapse-panel key="3">
         <template #header>
           <!-- 使用header插槽插入下拉组件 -->
-          <a-dropdown :open="dropdownVisible" @openChange="handleOpenChange">
+          <a-dropdown>
             <div class="ant-dropdown-link menuText">
               {{ theChat.question }}
-              <DownOutlined />
             </div>
             <template #overlay>
               <a-menu @click="handleMenuClick">
@@ -75,6 +74,7 @@ import {
   PREDICTION_OPTIMIZEDPOLYNOMIALREGRESSIONPREDICT,
   PREDICTION_BPNETWORKPREDICT,
   PREDICTION_OPTIMIZEDARIMAPREDICT,
+  PREDICTION_OPTIMIZEDSVMREGRESSIOINPREDICT,
   PREDICTION_OPTIMIZEDPREDICT,
 } from "../apis/prediction";
 import { getCookie } from "../apis/http";

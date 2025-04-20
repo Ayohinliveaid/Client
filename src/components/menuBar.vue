@@ -7,10 +7,9 @@
       <a-collapse-panel key="3">
         <template #header>
           <!-- 使用header插槽插入下拉组件 -->
-          <a-dropdown :open="dropdownVisible" @openChange="handleOpenChange">
+          <a-dropdown>
             <div class="ant-dropdown-link menuText">
               {{ theChat.question }}
-              <DownOutlined />
             </div>
             <template #overlay>
               <a-menu @click="handleMenuClick" class="menuStyle">
@@ -50,6 +49,7 @@ import {
   PREDICTION_OPTIMIZEDARIMAPREDICT,
   PREDICTION_BPNETWORKPREDICT,
   PREDICTION_SVMREGRESSIOINPREDICT,
+  PREDICTION_OPTIMIZEDSVMREGRESSIOINPREDICT,
   PREDICTION_OPTIMIZEDPREDICT,
 } from "../apis/prediction";
 import { CHAT_GETSAVEDCHATS, CHAT_DELETETHECHAT } from "../apis/chat";
@@ -204,6 +204,8 @@ const optimizedPolynomialRegressionPredict = () => {
   // PREDICTION_BPNETWORKPREDICT
   // PREDICTION_OPTIMIZEDARIMAPREDICT
   // PREDICTION_SVMREGRESSIOINPREDICT
+  // PREDICTION_OPTIMIZEDSVMREGRESSIOINPREDICT
+
   PREDICTION_OPTIMIZEDPREDICT({
     data: state.theChat.data,
   })

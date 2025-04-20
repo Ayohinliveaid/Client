@@ -217,6 +217,7 @@ const getUserInfo = () => {
         // alert(err.response.data.message);
         if (err.response.data.message == "无效的 Token") {
           logout();
+          emit("update:showLoginModal", true);
         }
       }
       console.log(err);

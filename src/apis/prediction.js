@@ -41,6 +41,14 @@ const PREDICTION_SVMREGRESSIOINPREDICT = (data) =>
     data
   );
 
+//最佳SVM回归预测
+const PREDICTION_OPTIMIZEDSVMREGRESSIOINPREDICT = (data) =>
+  requestURL(
+    VITE_API_BASE_URL + "/prediction/optimizedSVMRegressionPredict",
+    "post",
+    data
+  );
+
 //综合回归预测
 const PREDICTION_OPTIMIZEDPREDICT = (data) =>
   requestURL(VITE_API_BASE_URL + "/prediction/optimizedPredict", "post", data);
@@ -52,5 +60,6 @@ export {
   PREDICTION_OPTIMIZEDARIMAPREDICT,
   PREDICTION_BPNETWORKPREDICT,
   PREDICTION_SVMREGRESSIOINPREDICT,
+  PREDICTION_OPTIMIZEDSVMREGRESSIOINPREDICT,
   PREDICTION_OPTIMIZEDPREDICT,
 };
