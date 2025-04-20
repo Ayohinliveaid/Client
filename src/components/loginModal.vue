@@ -202,7 +202,26 @@ const logout = () => {
 };
 
 //请求用户信息
-const getUserInfo = () => {};
+const getUserInfo = () => {
+  USER_GETUSERINFO()
+    .then((res) => {
+      console.log(res);
+      if (res.request.status == 200) {
+        userInfo.value = res.data.userInfo;
+      }
+    })
+    .catch((err) => {
+      if (err.response.status == 400) {
+        alert("服务器繁忙：" + err.message);
+      } else {
+        // alert(err.response.data.message);
+        if (err.response.data.message == "无效的 Token") {
+          logout();
+        }
+      }
+      console.log(err);
+    });
+};
 
 //取消按钮和遮罩层的点击
 const onCancel = () => {
@@ -216,21 +235,7 @@ const onOK = () => {
 onMounted(() => {
   loginState = sessionStorage.getItem("estimaLoginState");
   if (loginState == "1") {
-    USER_GETUSERINFO()
-      .then((res) => {
-        console.log(res);
-        if (res.request.status == 200) {
-          userInfo.value = res.data.userInfo;
-        }
-      })
-      .catch((err) => {
-        if (err.response.status == 400) {
-          alert("服务器繁忙：" + err.message);
-        } else {
-          alert(err.response.data.message);
-        }
-        console.log(err);
-      });
+    getUserInfo();
   }
 });
 </script>

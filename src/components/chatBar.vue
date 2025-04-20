@@ -101,7 +101,7 @@ const state = reactive({
   newChat: {
     id: "new",
     question: "新问题",
-    answer: "正在思考",
+    answer: "向Estima提问",
     saved: 0,
     data: [],
     step: 0,
@@ -355,6 +355,7 @@ const updataTheChat = () => {
 };
 
 onMounted(() => {
+  state.theChat = state.newChat;
   if (loginState) {
     getChatHistory();
   }
