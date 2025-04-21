@@ -29,7 +29,7 @@
         <div
           class="saveButtonStyle"
           style="background-color: azure"
-          @click="optimizedPolynomialRegressionPredict"
+          @click="optimizedPredict"
           v-if="theChat.data.length != 0"
         >
           <div>预测数据</div>
@@ -299,7 +299,7 @@ const saveChat = () => {
 };
 
 //将当前对话的数据根据线性预测进行更新
-const optimizedPolynomialRegressionPredict = () => {
+const optimizedPredict = () => {
   animationFrameId = requestAnimationFrame(animate);
   state.showDot = true;
 
