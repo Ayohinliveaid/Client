@@ -30,7 +30,8 @@
           style="background-color: azure"
           @click="optimizedPolynomialRegressionPredict"
         >
-          <span>预测数据</span>
+          <div>预测数据</div>
+          <div v-if="showDot" class="dot" ref="dotRef"></div>
         </div>
         <div class="saveButtonStyle" @click="deleteChat">
           <span>删除这个问答</span>
@@ -50,6 +51,7 @@ import {
   PREDICTION_BPNETWORKPREDICT,
   PREDICTION_SVMREGRESSIOINPREDICT,
   PREDICTION_OPTIMIZEDSVMREGRESSIOINPREDICT,
+  PREDICTION_OPTIMIZEDBPNETWORKPREDICT,
   PREDICTION_OPTIMIZEDPREDICT,
 } from "../apis/prediction";
 import { CHAT_GETSAVEDCHATS, CHAT_DELETETHECHAT } from "../apis/chat";
@@ -77,6 +79,7 @@ const state = reactive({
     saved: 0,
   },
   activeState: false,
+  showDot: false,
 });
 const props = defineProps({ activeKey: Array, savedChat: Object });
 const emit = defineEmits([
@@ -98,6 +101,7 @@ const {
   savedChats,
   theChat,
   activeState,
+  showDot,
 } = toRefs(state);
 
 //控制展开，计算属性用于双向绑定
@@ -193,18 +197,34 @@ const getCookie = (name) => {
   if (parts.length === 2) return parts.pop().split(";").shift();
 };
 
+//小球跳动的函数----------------------------------------------------------------------------------------------------
+const dotRef = ref(null);
+let startTime = null;
+let animationFrameId = null;
+const animate = (timestamp) => {
+  if (!startTime) startTime = timestamp;
+  const elapsed = (timestamp - startTime) / 1000; // 计算秒数
+
+  if (dotRef.value) {
+    const scale = 1 + Math.sin(elapsed * Math.PI * 2) * 0.3; // 让小球变大变小（范围 0.7 ~ 1.3）
+    dotRef.value.style.transform = `scale(${scale})`;
+  }
+
+  animationFrameId = requestAnimationFrame(animate);
+};
+
 //将当前对话的数据根据线性预测进行更新
 const optimizedPolynomialRegressionPredict = () => {
-  let n = [];
-  for (let i = -30; i <= 30; i++) {
-    n.push(i);
-  }
+  animationFrameId = requestAnimationFrame(animate);
+  state.showDot = true;
+
   // PREDICTION_POLYNOMIALREGRESSIONPREDICT
   // PREDICTION_OPTIMIZEDPOLYNOMIALREGRESSIONPREDICT
   // PREDICTION_BPNETWORKPREDICT
   // PREDICTION_OPTIMIZEDARIMAPREDICT
   // PREDICTION_SVMREGRESSIOINPREDICT
   // PREDICTION_OPTIMIZEDSVMREGRESSIOINPREDICT
+  // PREDICTION_OPTIMIZEDBPNETWORKPREDICT
 
   PREDICTION_OPTIMIZEDPREDICT({
     data: state.theChat.data,
@@ -220,13 +240,18 @@ const optimizedPolynomialRegressionPredict = () => {
         console.log("menuBar中dataAndPredictedData", dataAndPredictedData);
         state.theChat.answer = result.answer;
         emit("appendTheChat", dataAndPredictedData); //传输原数据和预测数据，最终到达图表组件
+        state.showDot = false;
+        cancelAnimationFrame(animationFrameId);
       } else {
+        state.showDot = false;
+        cancelAnimationFrame(animationFrameId);
         alert(response);
       }
     })
     .catch((err) => {
       alert(err.message);
     });
+
   // 获取 "estimaToken" cookie
   // console.log("token", JSON.stringify(document.cookie)); // 打印 token
 };

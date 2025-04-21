@@ -24,14 +24,16 @@
         </template>
         <div class="contentStyle">
           {{ theChat.answer }}
-          <div v-if="showDot" class="dot" ref="dotRef"></div>
+          <div v-if="showAnswerDot" class="dot" ref="answerDotRef"></div>
         </div>
         <div
           class="saveButtonStyle"
           style="background-color: azure"
           @click="optimizedPolynomialRegressionPredict"
+          v-if="theChat.data.length != 0"
         >
-          <span>预测数据</span>
+          <div>预测数据</div>
+          <div v-if="showDot" class="dot" ref="dotRef"></div>
         </div>
         <div>
           <div v-if="theChat.saved === 0" class="saveButtonStyle" @click="saveChat">
@@ -85,6 +87,7 @@ const state = reactive({
   inputBox: null,
   chatSet: null,
   showDot: false,
+  showAnswerDot: false,
 
   dropDownHeader: "hahah",
   menuItems: [
@@ -132,6 +135,7 @@ const {
   chatHistory,
   theChat,
   showDot,
+  showAnswerDot,
   step,
   newQuestion,
   activeState,
@@ -232,7 +236,7 @@ const submit = async () => {
     state.theChat = JSON.parse(JSON.stringify(state.newChat));
     activateTheChatBar(state.theChat.data);
     animationFrameId = requestAnimationFrame(animate);
-    state.showDot = true;
+    state.showAnswerDot = true;
 
     // //请求后端接口，获取答案和数据
     const question = { question: state.newQuestion };
@@ -254,11 +258,11 @@ const submit = async () => {
       console.log("theChat", state.theChat);
     } else {
     }
-    state.showDot = false;
+    state.showAnswerDot = false;
     cancelAnimationFrame(animationFrameId);
   } catch (err) {
     alert(err.message);
-    state.showDot = false;
+    state.showAnswerDot = false;
     cancelAnimationFrame(animationFrameId);
   }
 };
@@ -296,10 +300,9 @@ const saveChat = () => {
 
 //将当前对话的数据根据线性预测进行更新
 const optimizedPolynomialRegressionPredict = () => {
-  let n = [];
-  for (let i = -30; i <= 30; i++) {
-    n.push(i);
-  }
+  animationFrameId = requestAnimationFrame(animate);
+  state.showDot = true;
+
   PREDICTION_OPTIMIZEDPREDICT({ data: state.theChat.data })
     .then((response) => {
       console.log(response);
@@ -314,7 +317,11 @@ const optimizedPolynomialRegressionPredict = () => {
         console.log("chatBar中dataAndPredictedData", dataAndPredictedData);
         emit("appendTheChat", dataAndPredictedData); //传输原数据和预测数据，最终到达图表组件
         state.theChat.answer = result.answer;
+        state.showDot = false;
+        cancelAnimationFrame(animationFrameId);
       } else {
+        state.showDot = false;
+        cancelAnimationFrame(animationFrameId);
         alert(data.err);
       }
     })
@@ -365,6 +372,7 @@ onMounted(() => {
 
 //小球跳动的函数----------------------------------------------------------------------------------------------------
 const dotRef = ref(null);
+const answerDotRef = ref(null);
 let startTime = null;
 let animationFrameId = null;
 const animate = (timestamp) => {
@@ -374,6 +382,10 @@ const animate = (timestamp) => {
   if (dotRef.value) {
     const scale = 1 + Math.sin(elapsed * Math.PI * 2) * 0.3; // 让小球变大变小（范围 0.7 ~ 1.3）
     dotRef.value.style.transform = `scale(${scale})`;
+  }
+  if (answerDotRef.value) {
+    const scale = 1 + Math.sin(elapsed * Math.PI * 2) * 0.3; // 让小球变大变小（范围 0.7 ~ 1.3）
+    answerDotRef.value.style.transform = `scale(${scale})`;
   }
 
   animationFrameId = requestAnimationFrame(animate);

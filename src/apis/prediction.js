@@ -49,6 +49,14 @@ const PREDICTION_OPTIMIZEDSVMREGRESSIOINPREDICT = (data) =>
     data
   );
 
+//最佳BPNetwork回归预测
+const PREDICTION_OPTIMIZEDBPNETWORKPREDICT = (data) =>
+  requestURL(
+    VITE_API_BASE_URL + "/prediction/optimizedBPNetworkPredict",
+    "post",
+    data
+  );
+
 //综合回归预测
 const PREDICTION_OPTIMIZEDPREDICT = (data) =>
   requestURL(VITE_API_BASE_URL + "/prediction/optimizedPredict", "post", data);
@@ -61,5 +69,6 @@ export {
   PREDICTION_BPNETWORKPREDICT,
   PREDICTION_SVMREGRESSIOINPREDICT,
   PREDICTION_OPTIMIZEDSVMREGRESSIOINPREDICT,
+  PREDICTION_OPTIMIZEDBPNETWORKPREDICT,
   PREDICTION_OPTIMIZEDPREDICT,
 };
