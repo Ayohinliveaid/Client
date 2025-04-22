@@ -1,27 +1,30 @@
 <template>
   <div class="backgroundStyle" ref="background">
-    <chartG2
-      v-bind:data="data"
-      v-bind:dataAndPredictedData="dataAndPredictedData"
-      ref="theChartG2"
-    ></chartG2>
-    <!-- <mapL7 v-bind:data="data" ref="theMapL7"></mapL7> -->
-    <chatBar
-      v-model:activeKey="chatBarActiveKey"
-      v-bind:deletedChat="deletedChat"
-      ref="theChatBar"
-      @changeTheChat="handleChangeTheChat($event, 'theMenuBar')"
-      @appendTheChat="handleAppendTheChat($event)"
-      @saveTheChat="handleSaveTheChat"
-    ></chatBar>
-    <menuBar
-      v-model:activeKey="menuBarActiveKey"
-      v-bind:savedChat="savedChat"
-      ref="theMenuBar"
-      @changeTheChat="handleChangeTheChat($event, 'theChatBar')"
-      @appendTheChat="handleAppendTheChat($event)"
-      @deleteTheChat="handleDeleteTheChat"
-    ></menuBar>
+    <div :class="leftActive ? 'mainArea leftActive' : 'mainArea rightActive'">
+      <chartG2
+        v-bind:data="data"
+        v-bind:dataAndPredictedData="dataAndPredictedData"
+        ref="theChartG2"
+      ></chartG2>
+      <!-- <mapL7 v-bind:data="data" ref="theMapL7"></mapL7> -->
+      <chatBar
+        v-model:activeKey="chatBarActiveKey"
+        v-bind:deletedChat="deletedChat"
+        ref="theChatBar"
+        @changeTheChat="handleChangeTheChat($event, 'theMenuBar')"
+        @appendTheChat="handleAppendTheChat($event)"
+        @saveTheChat="handleSaveTheChat"
+      ></chatBar>
+      <menuBar
+        v-model:activeKey="menuBarActiveKey"
+        v-bind:savedChat="savedChat"
+        ref="theMenuBar"
+        @changeTheChat="handleChangeTheChat($event, 'theChatBar')"
+        @appendTheChat="handleAppendTheChat($event)"
+        @deleteTheChat="handleDeleteTheChat"
+      ></menuBar>
+    </div>
+
     <div class="userStyle" ref="user" v-on:click="toggleShowLoginModal">
       {{ userText }}
     </div>
@@ -51,6 +54,7 @@ const state = reactive({
   savedChat: {},
   deletedChat: [],
   userText: "登录",
+  leftActive: true,
 });
 const {
   title,
@@ -64,6 +68,7 @@ const {
   savedChat,
   deletedChat,
   userText,
+  leftActive,
 } = toRefs(state);
 
 //控制菜单点击后不收起
@@ -80,18 +85,17 @@ let canScroll = true;
 //点击事件
 // 监听整个页面的点击事件
 const handleClick = (event) => {
-  if (
-    (theMapL7.value && theMapL7.value.$el.contains(event.target)) ||
-    (theChartG2.value && theChartG2.value.$el.contains(event.target))
-  ) {
-    // if (background.value && background.value.contains(event.target)) {
-    console.log("点击了 theMapL7");
-    chatBarActiveKey.value = [];
-
-    menuBarActiveKey.value = [];
-  } else {
-    console.log("点击了theMapL7以外地方");
-  }
+  // if (
+  //   (theMapL7.value && theMapL7.value.$el.contains(event.target)) ||
+  //   (theChartG2.value && theChartG2.value.$el.contains(event.target))
+  // ) {
+  //   // if (background.value && background.value.contains(event.target)) {
+  //   console.log("点击了 theMapL7");
+  //   chatBarActiveKey.value = [];
+  //   menuBarActiveKey.value = [];
+  // } else {
+  //   console.log("点击了theMapL7以外地方");
+  // }
 };
 onMounted(() => {
   document.addEventListener("click", handleClick);
@@ -112,15 +116,21 @@ const toggleShowLoginModal = () => {
   console.log(showLoginModal.value);
 };
 
-//接受对话模块传输的数据
+//接受对话模块传输的数据，并控制活跃状态
 const handleChangeTheChat = (data, type = null) => {
   // console.log("index.vue recevied changement of the chat");
   // alert(JSON.stringify(data));
   state.data = data;
   if (type == "theChatBar") {
-    theChatBar.value.deactivatedTheChatBar();
+    theChatBar.value.deactivatedTheChatBar(); //改变对话栏本身状态
+    chatBarActiveKey.value = [];
+    state.leftActive = true; //通过改变背景，改变图表组件样式
   } else if (type == "theMenuBar") {
     theMenuBar.value.deactivatedTheChatBar();
+    menuBarActiveKey.value = [];
+    state.leftActive = false;
+
+    console.log("state.leftActive", state.leftActive);
   }
 };
 

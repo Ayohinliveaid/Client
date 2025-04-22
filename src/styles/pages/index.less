@@ -6,27 +6,42 @@
 .backgroundStyle {
   width: 100vw;
   height: 100vh;
-  padding: 100px;
+  padding: 20px;
+  padding-top: 100px;
   box-sizing: border-box;
   overflow: hidden;
-  background-color: rgba(248, 245, 192, 0.5);
+  background-color: rgba(127, 225, 41, 0.5);
+  background-image: url(/public/blue.jpeg);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
+
+  .mainArea {
+    height: 100%;
+  }
 
   .userStyle {
-    position: absolute;
     z-index: 10000;
-    left: 0;
-    bottom: 0;
+    box-sizing: border-box;
     background-color: #a0c4f8;
     color: white;
     height: 30px;
-    width: auto;
-    padding: 10px;
+    width: 100%;
+    padding: 20px;
     border-radius: 10px;
-    margin: 5px;
+
     display: flex;
     justify-content: center;
     align-items: center;
+    opacity: 0.7;
   }
+}
+.leftActive {
+  padding-left: 300px;
+}
+.rightActive {
+  padding-right: 300px;
 }
 
 ::-webkit-scrollbar {

@@ -19,7 +19,7 @@
             @finishFailed="onFinishFailed"
           >
             <a-form-item
-              label="Phone Number"
+              label="Username"
               name="phoneNumber"
               :rules="[{ required: true, message: 'Please input your pn!' }]"
             >
@@ -57,7 +57,7 @@
             @finishFailed="onFinishFailed"
           >
             <a-form-item
-              label="Phone Number"
+              label="Username"
               name="phoneNumber"
               :rules="[{ required: true, message: 'Please input your pn!' }]"
             >

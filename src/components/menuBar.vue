@@ -28,7 +28,8 @@
         <div
           class="saveButtonStyle"
           style="background-color: azure"
-          @click="optimizedPolynomialRegressionPredict"
+          @click="optimizedPredict"
+          v-if="theChat.data.length !== 0"
         >
           <div>预测数据</div>
           <div v-if="showDot" class="dot" ref="dotRef"></div>
@@ -69,15 +70,18 @@ const state = reactive({
   savedChats: [],
   theChat: {
     id: "",
-    question: "请登录",
-    answer: "请登录",
+    question: "问",
+    answer: "答",
+    data: [],
   },
   newChat: {
     id: "new",
-    question: "新问题",
-    answer: "正在思考",
+    question: "问",
+    answer: "答",
     saved: 0,
+    data: [],
   },
+
   activeState: false,
   showDot: false,
 });
@@ -159,6 +163,7 @@ const updateTheChat = () => {
 };
 
 onMounted(async () => {
+  state.theChat = state.newChat;
   if (loginState) {
     //登录状态才会自动请求接口
     await getSavedChats(); //如果getSavedChats内部用then则无效
@@ -214,7 +219,7 @@ const animate = (timestamp) => {
 };
 
 //将当前对话的数据根据线性预测进行更新
-const optimizedPolynomialRegressionPredict = () => {
+const optimizedPredict = () => {
   animationFrameId = requestAnimationFrame(animate);
   state.showDot = true;
 
