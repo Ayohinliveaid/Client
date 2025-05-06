@@ -24,6 +24,7 @@
         </template>
         <div class="contentStyle">
           {{ theChat.answer }}
+          <!-- <pre>{{ theChat.answer }}</pre> -->
         </div>
         <div
           class="saveButtonStyle"
@@ -143,18 +144,20 @@ const handleMenuClick = ({ key }) => {
 const getSavedChats = async () => {
   try {
     const response = await CHAT_GETSAVEDCHATS(); // 等待请求完成
+
     state.savedChats = response.data.chats;
     state.menuItems = state.savedChats.map((chat) => ({
       key: chat.id,
       label: chat.question,
     }));
-    updateTheChat();
+
     console.log("getSavedChats：state.savedChats", state.savedChats);
   } catch (err) {
     console.error("获取对话历史失败", err);
   }
 };
 
+//当前将当前对话设置为保存列表的最后一个，并激活对话框
 const updateTheChat = () => {
   state.theChat = JSON.parse(
     JSON.stringify(state.savedChats[state.savedChats.length - 1])
@@ -167,6 +170,7 @@ onMounted(async () => {
   if (loginState) {
     //登录状态才会自动请求接口
     await getSavedChats(); //如果getSavedChats内部用then则无效
+    updateTheChat();
   }
 
   watch(
@@ -188,6 +192,7 @@ const deleteChat = () => {
         emit("deleteTheChat", chat);
         console.log("deleteTheChat", JSON.stringify(chat));
         getSavedChats();
+        updateTheChat();
       } else {
         alert(data.err);
       }

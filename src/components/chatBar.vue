@@ -104,7 +104,7 @@ const state = reactive({
   newChat: {
     id: "new",
     question: "新问题",
-    answer: "向Estima提问",
+    answer: "向Estima提问\n关于美国城市的待出售、待出租、已出售房产的两个数据属性",
     saved: 0,
     data: [],
     step: 0,
@@ -168,7 +168,7 @@ const handleMenuClick = ({ key }) => {
 
   if (key === "new") {
     state.theChat = JSON.parse(JSON.stringify(state.newChat));
-    theChat;
+    activateTheChatBar([]);
   } else {
     // state.theChat = state.chatHistory.find((v) => v.id === key);// theChat改变会导致chatHistroy改变
     state.theChat = JSON.parse(
