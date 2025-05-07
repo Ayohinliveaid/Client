@@ -230,7 +230,7 @@ const submit = async () => {
   try {
     // state.theChat.answer = "正在思考";
     if (!sessionStorage.getItem("estimaLoginState")) {
-      alert("请点击下方登录组件，登录后提问");
+      alert("请点击最下方组件，登录后提问");
       return;
     }
 
