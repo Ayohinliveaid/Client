@@ -51,7 +51,7 @@
             id="inputBox"
             ref="inputBox"
             v-model="newQuestion"
-            placeholder="给Estima发送消息"
+            placeholder="给Estima发送问题"
             placeholder-class="textarea-placeholder"
             @input="adjustHeight"
             class="inputStyle"
@@ -101,8 +101,8 @@ const state = reactive({
   newChat: {
     id: "new",
     question: "新问题",
-    answer: "向Estima提问\n关于美国城市的待出售、待出租、已出售房产的两个数据属性",
-    saved: -1,
+    answer: "向Estima提问关于美国城市的待出售、待出租、已出售房产的两个数据维度",
+    saved: 0,
     data: [],
     step: 0,
   },
@@ -229,6 +229,10 @@ const fetchStream = async (api, body) => {
 const submit = async () => {
   try {
     // state.theChat.answer = "正在思考";
+    if (!sessionStorage.getItem("estimaLoginState")) {
+      alert("请点击下方登录组件，登录后提问");
+      return;
+    }
 
     state.theChat = JSON.parse(JSON.stringify(state.newChat));
     activateTheChatBar(state.theChat.data);
