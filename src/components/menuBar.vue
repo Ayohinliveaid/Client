@@ -132,7 +132,7 @@ defineExpose({
 
 //菜单点击事件
 const handleMenuClick = ({ key }) => {
-  emit("update:activeKey", ["3"]);
+  emit("update:activeKey", ["3"]); //展开
   if (state.savedChats.length != 0) {
     state.theChat = JSON.parse(
       JSON.stringify(state.savedChats.find((v) => v.id === key))
@@ -146,26 +146,27 @@ const getSavedChats = async () => {
   try {
     const response = await CHAT_GETSAVEDCHATS(); // 等待请求完成
 
-    if (response.data.chats.length != 0) {
-      state.savedChats = response.data.chats;
-      state.menuItems = state.savedChats.map((chat) => ({
-        key: chat.id,
-        label: chat.question,
-      }));
+    state.savedChats = response.data.chats;
+    state.menuItems = state.savedChats.map((chat) => ({
+      key: chat.id,
+      label: chat.question,
+    }));
 
-      console.log("getSavedChats：state.savedChats", state.savedChats);
-    }
+    console.log("getSavedChats：state.savedChats", state.savedChats);
   } catch (err) {
     console.error("获取对话历史失败", err);
   }
 };
 
-//当前将当前对话设置为保存列表的最后一个，并激活对话框
+//当前将当前对话设置为保存列表的最后一个，或者空对话，并激活对话框
 const updateTheChat = () => {
   if (state.savedChats.length != 0) {
     state.theChat = JSON.parse(
       JSON.stringify(state.savedChats[state.savedChats.length - 1])
     );
+    activateTheChatBar(state.theChat.data);
+  } else {
+    state.theChat = JSON.parse(JSON.stringify(state.newChat));
     activateTheChatBar(state.theChat.data);
   }
 };
@@ -175,8 +176,10 @@ onMounted(async () => {
   if (loginState) {
     //登录状态才会自动请求接口
     await getSavedChats(); //如果getSavedChats内部用then则无效
-    updateTheChat();
-    emit("update:activeKey", ["3"]);
+    if (state.savedChats != 0) {
+      updateTheChat();
+      emit("update:activeKey", ["3"]);
+    }
   }
 
   watch(
@@ -188,22 +191,22 @@ onMounted(async () => {
 });
 
 //删除当前对话
-const deleteChat = () => {
+const deleteChat = async () => {
   const chat = state.theChat;
-  CHAT_DELETETHECHAT({ chat: chat })
-    .then((response) => {
-      const data = response.data;
-      if (data.message) {
-        alert(data.message);
-        emit("deleteTheChat", chat);
-        console.log("deleteTheChat", JSON.stringify(chat));
-        getSavedChats();
-        updateTheChat();
-      } else {
-        alert(data.err);
-      }
-    })
-    .catch((err) => {});
+  try {
+    const response = await CHAT_DELETETHECHAT({ chat: chat });
+    const data = response.data;
+
+    if (data.message) {
+      alert(data.message);
+      emit("deleteTheChat", chat);
+      console.log("deleteTheChat", JSON.stringify(chat));
+      await getSavedChats();
+      updateTheChat();
+    } else {
+      alert(data.err);
+    }
+  } catch (err) {}
 };
 
 // 获取 cookie

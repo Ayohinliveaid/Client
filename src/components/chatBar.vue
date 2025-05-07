@@ -102,7 +102,7 @@ const state = reactive({
     id: "new",
     question: "新问题",
     answer: "向Estima提问\n关于美国城市的待出售、待出租、已出售房产的两个数据属性",
-    saved: 0,
+    saved: -1,
     data: [],
     step: 0,
   },
