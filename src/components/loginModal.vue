@@ -113,6 +113,7 @@ const props = defineProps(["showLoginModal"]);
 //   return sessionStorage.getItem("estimaLoginState");
 // });
 let loginState = null;
+const loading = ref(false);
 
 const form = ref({
   phoneNumber: "19106537806",
@@ -184,11 +185,16 @@ const login = () => {
       }
     })
     .catch((err) => {
-      if (err.response.status == 400) {
-        alert("服务器繁忙：" + err.message);
+      if (err.response) {
+        if (err.response.status == 400) {
+          alert(err.response.data.message);
+        } else {
+          alert("服务器繁忙：" + err.message);
+        }
       } else {
-        alert(err.response.data.message);
+        alert("网络错误");
       }
+
       console.log(err);
     });
 };
