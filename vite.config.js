@@ -19,4 +19,7 @@ export default defineConfig({
   //   host: "10.33.125.3", // 将开发服务器绑定到127.0.0.1
   //   port: 3000, // 可以指定端口
   // },
+  define: {
+    __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false,
+  },
 });

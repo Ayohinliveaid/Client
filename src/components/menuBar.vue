@@ -159,10 +159,12 @@ const getSavedChats = async () => {
 
 //当前将当前对话设置为保存列表的最后一个，并激活对话框
 const updateTheChat = () => {
-  state.theChat = JSON.parse(
-    JSON.stringify(state.savedChats[state.savedChats.length - 1])
-  );
-  activateTheChatBar(state.theChat.data);
+  if (state.savedChats.length != 0) {
+    state.theChat = JSON.parse(
+      JSON.stringify(state.savedChats[state.savedChats.length - 1])
+    );
+    activateTheChatBar(state.theChat.data);
+  }
 };
 
 onMounted(async () => {

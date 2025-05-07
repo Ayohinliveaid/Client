@@ -21,14 +21,14 @@
             <a-form-item
               label="Username"
               name="phoneNumber"
-              :rules="[{ required: true, message: 'Please input your pn!' }]"
+              :rules="[{ required: true, message: 'Please input your user name!' }]"
             >
               <a-input v-model:value="form.phoneNumber" />
             </a-form-item>
             <a-form-item
               label="Password"
               name="password"
-              :rules="[{ required: true, message: 'Please input your pw!' }]"
+              :rules="[{ required: true, message: 'Please input your password!' }]"
             >
               <a-input v-model:value="form.password" />
             </a-form-item>
