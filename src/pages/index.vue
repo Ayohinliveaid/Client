@@ -46,15 +46,15 @@ const state = reactive({
   title: "hah",
   theMapL7: null,
   theChartG2: null,
-  chatBarActiveKey: [],
-  menuBarActiveKey: [3],
+  chatBarActiveKey: [3],
+  menuBarActiveKey: [],
   showLoginModal: false,
   data: [],
   dataAndPredictedData: {},
   savedChat: {},
   deletedChat: [],
   userText: "登录",
-  leftActive: true,
+  leftActive: false,
 });
 const {
   title,

@@ -90,10 +90,7 @@ const state = reactive({
   showAnswerDot: false,
 
   dropDownHeader: "hahah",
-  menuItems: [
-    { key: "1", label: "标题一" },
-    { key: "4", label: "新问题" },
-  ],
+  menuItems: [{ key: "4", label: "新问题" }],
   chatHistory: [],
   theChat: {
     id: "",
@@ -110,7 +107,7 @@ const state = reactive({
     step: 0,
   },
   newQuestion: "",
-  activeState: false,
+  activeState: true,
 });
 const props = defineProps({
   activeKey: Array,

@@ -64,10 +64,7 @@ const state = reactive({
   chatSet: null,
 
   dropDownHeader: "hahah",
-  menuItems: [
-    { key: "1", label: "标题一" },
-    { key: "4", label: "新问题" },
-  ],
+  menuItems: [{ key: "4", label: "保存问题列表" }],
   savedChats: [],
   theChat: {
     id: "",
@@ -136,8 +133,12 @@ defineExpose({
 //菜单点击事件
 const handleMenuClick = ({ key }) => {
   emit("update:activeKey", ["3"]);
-  state.theChat = JSON.parse(JSON.stringify(state.savedChats.find((v) => v.id === key)));
-  activateTheChatBar(state.theChat.data);
+  if (state.savedChats.length != 0) {
+    state.theChat = JSON.parse(
+      JSON.stringify(state.savedChats.find((v) => v.id === key))
+    );
+    activateTheChatBar(state.theChat.data);
+  }
 };
 
 //请求对话历史赋值给savedChats，并更新菜单项menuItems
@@ -145,13 +146,15 @@ const getSavedChats = async () => {
   try {
     const response = await CHAT_GETSAVEDCHATS(); // 等待请求完成
 
-    state.savedChats = response.data.chats;
-    state.menuItems = state.savedChats.map((chat) => ({
-      key: chat.id,
-      label: chat.question,
-    }));
+    if (response.data.chats.length != 0) {
+      state.savedChats = response.data.chats;
+      state.menuItems = state.savedChats.map((chat) => ({
+        key: chat.id,
+        label: chat.question,
+      }));
 
-    console.log("getSavedChats：state.savedChats", state.savedChats);
+      console.log("getSavedChats：state.savedChats", state.savedChats);
+    }
   } catch (err) {
     console.error("获取对话历史失败", err);
   }
@@ -173,6 +176,7 @@ onMounted(async () => {
     //登录状态才会自动请求接口
     await getSavedChats(); //如果getSavedChats内部用then则无效
     updateTheChat();
+    emit("update:activeKey", ["3"]);
   }
 
   watch(
