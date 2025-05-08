@@ -15,8 +15,7 @@
             :label-col="{ span: 8 }"
             :wrapper-col="{ span: 16 }"
             autocomplete="off"
-            @finish="onFinish"
-            @finishFailed="onFinishFailed"
+         
           >
             <a-form-item
               label="Username"
@@ -53,8 +52,7 @@
             :label-col="{ span: 8 }"
             :wrapper-col="{ span: 16 }"
             autocomplete="off"
-            @finish="onFinish"
-            @finishFailed="onFinishFailed"
+        
           >
             <a-form-item
               label="Username"
