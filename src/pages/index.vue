@@ -123,7 +123,7 @@ const handleChangeTheChat = (data, type = null) => {
   state.data = data;
   if (type == "theChatBar") {
     theChatBar.value.deactivatedTheChatBar(); //改变对话栏本身状态
-    chatBarActiveKey.value = [];
+    chatBarActiveKey.value = []; //收起对话栏
     state.leftActive = true; //通过改变背景，改变图表组件样式
   } else if (type == "theMenuBar") {
     theMenuBar.value.deactivatedTheChatBar();
