@@ -61,8 +61,8 @@ const updateChart = (data, xField, yField, predictedData = null, fittedData = nu
       .encode("x", xField)
       .encode("y", yField)
       .encode("size", 8)
-      .style("fill", "green")
-      .style("stroke", "green")
+      .style("fill", "lightgreen")
+      .style("stroke", "lightgreen")
       .style("shape", "circle");
   }
 

@@ -258,6 +258,7 @@ const optimizedPredict = () => {
           //排除了arima类型
 
           if (predictedDataN == dataN + n) {
+            // if (1) {
             //说明是续写了n，最普遍的预测
             dataAndPredictedData.fittedData = dataAndPredictedData.predictedData.slice(
               0,
