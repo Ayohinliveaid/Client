@@ -244,10 +244,34 @@ const optimizedPredict = () => {
       const result = response.data;
       if (result) {
         // state.theChat.data = data;
+
         const dataAndPredictedData = {
           data: state.theChat.data,
           predictedData: result.data,
+          fittedData: [],
         };
+        //区分拟合数据和预测数据，挑选出拟合数据，暂时仅对于非svm非arima有效
+        const dataN = dataAndPredictedData.data.length;
+        const predictedDataN = dataAndPredictedData.predictedData.length;
+        const n = dataN < 10 ? 1 : Math.floor(dataN / 10);
+        if (predictedDataN > dataN) {
+          //排除了arima类型
+
+          if (predictedDataN == dataN + n) {
+            //说明是续写了n，最普遍的预测
+            dataAndPredictedData.fittedData = dataAndPredictedData.predictedData.slice(
+              0,
+              dataN
+            );
+            dataAndPredictedData.predictedData = dataAndPredictedData.predictedData.slice(
+              predictedDataN - n,
+              predictedDataN
+            );
+          } else {
+            //说明是svm预测
+          }
+        }
+
         console.log("menuBar中dataAndPredictedData", dataAndPredictedData);
         state.theChat.answer = result.answer;
         emit("appendTheChat", dataAndPredictedData); //传输原数据和预测数据，最终到达图表组件

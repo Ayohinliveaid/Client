@@ -29,7 +29,7 @@ const loginState = sessionStorage.getItem("estimaLoginState");
 let chart = null;
 
 //完全换成另一个图表。或者在当前的图表上，重叠一个预测图表，需要输入原数据data和预测数据predictedData，xField和yField
-const updateChart = (data, xField, yField, predictedData = null) => {
+const updateChart = (data, xField, yField, predictedData = null, fittedData = null) => {
   chart.clear(); // 清除旧的绘图
   chart
     .point()
@@ -41,6 +41,7 @@ const updateChart = (data, xField, yField, predictedData = null) => {
     .style("shape", "circle");
 
   if (predictedData) {
+    //纯预测数据用红色
     chart
       .point()
       .data(predictedData)
@@ -49,6 +50,19 @@ const updateChart = (data, xField, yField, predictedData = null) => {
       .encode("size", 8)
       .style("fill", "red")
       .style("stroke", "red")
+      .style("shape", "circle");
+  }
+
+  if (fittedData) {
+    //拟合数据用绿色
+    chart
+      .point()
+      .data(fittedData)
+      .encode("x", xField)
+      .encode("y", yField)
+      .encode("size", 8)
+      .style("fill", "green")
+      .style("stroke", "green")
       .style("shape", "circle");
   }
 
@@ -114,7 +128,7 @@ onMounted(() => {
           }
         }
         console.log(keys);
-        updateChart(newData.data, x, y, newData.predictedData);
+        updateChart(newData.data, x, y, newData.predictedData, newData.fittedData);
         // chart.changeData(newData); //似乎请求数据后虽然改变了encode，但是图表需要刷新页面才能显示
       }
     }
