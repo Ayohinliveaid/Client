@@ -199,8 +199,8 @@ const fetchStream = async (api, body) => {
       if (done) break;
 
       buffer += decoder.decode(value, { stream: true });
-      const lines = buffer.split("\n");
-      buffer = lines.pop(); // 保存未完成的行
+      const lines = buffer.split("\n"); //根据真实的分割来切分
+      buffer = lines.pop(); // 最后一个可能不完整，下一次处理
 
       for (const line of lines) {
         if (line.trim()) {

@@ -105,7 +105,9 @@
 }
 
 ::v-deep .ant-collapse .ant-collapse-content > .ant-collapse-content-box {
-  height: 79vh;
+  // height: 79vh;
+  // height: calc(100vh-10px);
+  min-height: calc(100vh - 165px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;

@@ -15,7 +15,6 @@
             :label-col="{ span: 8 }"
             :wrapper-col="{ span: 16 }"
             autocomplete="off"
-         
           >
             <a-form-item
               label="Username"
@@ -52,7 +51,6 @@
             :label-col="{ span: 8 }"
             :wrapper-col="{ span: 16 }"
             autocomplete="off"
-        
           >
             <a-form-item
               label="Username"
