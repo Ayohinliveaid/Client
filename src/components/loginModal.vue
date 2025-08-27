@@ -1,6 +1,6 @@
 <template>
   <a-modal
-    v-model:open="props.showLoginModal"
+    v-model:open="showLoginModalComputed"
     :closable="false"
     @ok="onOK"
     @cancel="onCancel"
@@ -119,6 +119,13 @@ const form = ref({
 const userInfo = ref({});
 
 const activeKey = ref("1");
+
+const showLoginModalComputed = computed({
+  get: () => props.showLoginModal,
+  set: (val) => {
+    emit("update:showLoginModal", val);
+  },
+});
 
 //以上是属性，以下是方法
 
